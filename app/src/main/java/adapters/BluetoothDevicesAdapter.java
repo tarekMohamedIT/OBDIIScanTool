@@ -75,7 +75,6 @@ public class BluetoothDevicesAdapter extends RecyclerView.Adapter<BluetoothDevic
             });
         }
         holder.deviceName.setText(deviceList.get(position).getName());
-        holder.macAddressName.setText(deviceList.get(position).getAddress());
 
     }
 
@@ -87,12 +86,10 @@ public class BluetoothDevicesAdapter extends RecyclerView.Adapter<BluetoothDevic
     public class BluetoothDeviceViewHolder extends RecyclerView.ViewHolder{
 
         TextView deviceName;
-        TextView macAddressName;
 
         public BluetoothDeviceViewHolder(View itemView) {
             super(itemView);
             deviceName = itemView.findViewById(R.id.DeviceNameTextView);
-            macAddressName = itemView.findViewById(R.id.DeviceMacTextView);
         }
     }
 

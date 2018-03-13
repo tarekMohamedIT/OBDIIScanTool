@@ -123,6 +123,14 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     @Override
     public void onBindViewHolder(ListRecyclerViewHolder holder, int position) {
         holder.imageView.setBackgroundResource(itemArrayList.get(position).resImageID);
+        final int pos = position;
+        holder.itemView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (onItemClickListener != null) onItemClickListener.onClick(pos);
+
+            }
+        });
     }
 
     @Override

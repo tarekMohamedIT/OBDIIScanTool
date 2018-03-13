@@ -39,7 +39,22 @@ public class MainActivity extends AppCompatActivity {
         listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_recordatrip,21));
 
         adapter = new RecyclerListAdapter(this, listItems);
-
+        adapter.setOnItemClickListener(new RecyclerListAdapter.OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                switch (position){
+                    case 0 :
+                        startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
+                        break;
+                    case 1 :
+                        startActivity(new Intent(MainActivity.this, GeneralInformation.class));
+                        break;
+                    case 2 :
+                        startActivity(new Intent(MainActivity.this, FaultCodes.class));
+                        break;
+                }
+            }
+        });
 
         recyclerView = findViewById(R.id.devicesRecyclerView);
 
