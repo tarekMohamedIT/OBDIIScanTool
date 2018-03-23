@@ -5,15 +5,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.r3tr0.obdiiscantool.ScanToolActivity"
-    android:weightSum="20">
+    android:weightSum="20"
+    tools:context="com.r3tr0.obdiiscantool.ScanToolActivity">
 
     <com.r3tr0.graphengine.core.circles.CircularProgressBar
         android:id="@+id/speedBar"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="14"
-        android:padding="16dp"
         app:circleColor="@color/cardview_light_background"
         app:progressBarWidth="40dp"
         app:progressColor="@color/colorPrimary"

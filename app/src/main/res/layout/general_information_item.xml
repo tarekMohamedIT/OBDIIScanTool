@@ -24,8 +24,8 @@
 
         <com.r3tr0.graphengine.core.circles.CircularProgressBar
             android:id="@+id/gaugeProgressBar"
-            android:layout_width="170dp"
-            android:layout_height="170dp"
+            android:layout_width="wrap_content"
+            android:layout_height="120dp"
             android:gravity="center_horizontal"
             app:circleColor="@color/cardview_light_background"
             app:progressBarWidth="30dp"
