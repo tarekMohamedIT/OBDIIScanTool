@@ -1,20 +1,14 @@
 package adapters;
 
 import android.content.Context;
-import android.icu.util.MeasureUnit;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
-import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.r3tr0.graphengine.core.circles.CircularProgressBar;
 import com.r3tr0.obdiiscantool.R;
-
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 
@@ -46,7 +40,6 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
     public GeneralInformationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         return new GeneralInformationViewHolder(inflater.inflate(R.layout.general_information_item, parent, false));
-
     }
 
     @Override
@@ -54,7 +47,7 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
         holder.headlineTextView.setText(generalInformationModelArrayList.get(position).getHeadline());
         holder.gauge.setTotalProgress(generalInformationModelArrayList.get(position).getMaxValue());
         holder.gauge.setCurrentProgress(generalInformationModelArrayList.get(position).getValue());
-        holder.valueTextView.setText(String.format("%s", generalInformationModelArrayList.get(position).getValue()));
+        holder.valueTextView.setText(String.format("%s/%s", generalInformationModelArrayList.get(position).getValue(), generalInformationModelArrayList.get(position).getMaxValue()));
     }
 
     @Override

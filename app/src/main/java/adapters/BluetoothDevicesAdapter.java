@@ -75,12 +75,15 @@ public class BluetoothDevicesAdapter extends RecyclerView.Adapter<BluetoothDevic
             });
         }
         holder.deviceName.setText(deviceList.get(position).getName());
-
     }
 
     @Override
     public int getItemCount() {
         return deviceList.size();
+    }
+
+    public interface OnItemClickListener {
+        void onClick(View view, int position);
     }
 
     public class BluetoothDeviceViewHolder extends RecyclerView.ViewHolder{
@@ -91,9 +94,5 @@ public class BluetoothDevicesAdapter extends RecyclerView.Adapter<BluetoothDevic
             super(itemView);
             deviceName = itemView.findViewById(R.id.DeviceNameTextView);
         }
-    }
-
-    public interface OnItemClickListener{
-        void onClick(View view, int position);
     }
 }
