@@ -23,7 +23,6 @@ public class BluetoothActivity extends AppCompatActivity {
         BluetoothAdapter Badapter =new BluetoothAdapter(this,arrayList);
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(Badapter);
-
     }
 
 
