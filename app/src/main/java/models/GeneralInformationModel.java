@@ -29,6 +29,10 @@ public class GeneralInformationModel {
         return value;
     }
 
+    public void setValue(float value) {
+        this.value = value;
+    }
+
     public float getMaxValue() {
         return maxValue;
     }

@@ -36,6 +36,11 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
         notifyItemInserted(generalInformationModelArrayList.size() - 1);
     }
 
+    public void modifyItem(int position, float value) {
+        generalInformationModelArrayList.get(position).setValue(value);
+        notifyItemChanged(position);
+    }
+
     @Override
     public GeneralInformationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
