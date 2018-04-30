@@ -23,7 +23,9 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
     public static final int MODE_WITH_GAUGE = 0;
     public static final int MODE_WITHOUT_GAUGE = 1;
 
+
     private Context context;
+
     private ArrayList<GeneralInformationModel> generalInformationModelArrayList;
 
     public GeneralInformationAdapter(Context context, ArrayList<GeneralInformationModel> generalInformationModelArrayList) {
@@ -36,9 +38,8 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
         notifyItemInserted(generalInformationModelArrayList.size() - 1);
     }
 
-    public void modifyItem(int position, float value) {
-        generalInformationModelArrayList.get(position).setValue(value);
-        notifyItemChanged(position);
+    public void modifyItems() {
+        notifyDataSetChanged();
     }
 
     @Override
@@ -49,10 +50,14 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
 
     @Override
     public void onBindViewHolder(GeneralInformationViewHolder holder, int position) {
+        final GeneralInformationViewHolder tmp = holder;
+
         holder.headlineTextView.setText(generalInformationModelArrayList.get(position).getHeadline());
+        holder.gauge.setCurrentProgress(0);
         holder.gauge.setTotalProgress(generalInformationModelArrayList.get(position).getMaxValue());
-        holder.gauge.setCurrentProgress(generalInformationModelArrayList.get(position).getValue());
-        holder.valueTextView.setText(String.format("%s/%s", generalInformationModelArrayList.get(position).getValue(), generalInformationModelArrayList.get(position).getMaxValue()));
+        float val = generalInformationModelArrayList.get(position).generateValue();
+        holder.gauge.setCurrentProgress(val);
+        holder.valueTextView.setText(String.format("%s/%s", val, generalInformationModelArrayList.get(position).getMaxValue()));
     }
 
     @Override

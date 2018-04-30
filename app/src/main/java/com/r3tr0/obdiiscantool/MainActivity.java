@@ -1,22 +1,36 @@
 package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
 
+import com.r3tr0.popups.dialogs.FileDialog;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 
 import adapters.RecyclerListAdapter;
+import dialogs.MethodSelectionDialog;
+import events.OnItemClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
     RecyclerListAdapter adapter;
     RecyclerView recyclerView;
     Button refreshButton;
+
+    MethodSelectionDialog dialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,28 +39,73 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<RecyclerListAdapter.ListItem> listItems = new ArrayList<>();
         listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_FULL, R.drawable.ic_bluetoothvector,21));
+        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_change_input, 21));
         listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_generalinfo,21));
         listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_faultcodes,21));
         listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_recordatrip,21));
 
         adapter = new RecyclerListAdapter(this, listItems);
-        adapter.setOnItemClickListener(new RecyclerListAdapter.OnItemClickListener() {
+        adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onClick(int position) {
                 switch (position){
                     case 0 :
-                        startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
+                        if (adapter.getItem(position).getResImageID() == R.drawable.ic_bluetoothvector)
+                            startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
+
+                        else {
+                            FileDialog dialog = new FileDialog(MainActivity.this);
+                            dialog.setOnDialogFinishListener(new FileDialog.OnDialogFinishListener() {
+                                @Override
+                                public void onDismiss(File file) {
+                                    if (file != null && file.getName().toLowerCase().endsWith(".json")) {
+                                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                                        preferences.edit().putString("json", getAllData(file)).apply();
+                                        new AlertDialog.Builder(MainActivity.this)
+                                                .setTitle("done").setMessage("Json file is set successfully!")
+                                                .setNeutralButton("Ok", null).show();
+                                    } else if (file == null) {
+                                        new AlertDialog.Builder(MainActivity.this)
+                                                .setTitle("error").setMessage("You didn't select a file!")
+                                                .setNeutralButton("Ok", null).show();
+                                    } else if (!file.getName().toLowerCase().endsWith(".json")) {
+                                        new AlertDialog.Builder(MainActivity.this)
+                                                .setTitle("error").setMessage("The selected file is not a JSON file!")
+                                                .setNeutralButton("Ok", null).show();
+                                    }
+                                }
+                            });
+
+                            dialog.showDialog();
+                        }
                         break;
+
                     case 1 :
+                        dialog.showDialog();
+                        break;
+
+                    case 2 :
                         startActivity(new Intent(MainActivity.this, GeneralInformation.class));
                         break;
-                    case 2 :
+                    case 3:
                         startActivity(new Intent(MainActivity.this, FaultCodes.class));
                         break;
-                    case 3:
+                    case 4:
                         startActivity(new Intent(MainActivity.this, TripActivity.class));
                         break;
                 }
+            }
+        });
+
+        dialog = new MethodSelectionDialog(MainActivity.this, new OnItemClickListener() {
+            @Override
+            public void onClick(int position) {
+                if (position == 0)
+                    adapter.changeImage(0, R.drawable.ic_jsonvector);
+                else
+                    adapter.changeImage(0, R.drawable.ic_bluetoothvector);
+
+                dialog.dismiss();
             }
         });
 
@@ -66,6 +125,35 @@ public class MainActivity extends AppCompatActivity {
 
         recyclerView.setLayoutManager(manager);
         recyclerView.setAdapter(adapter);
+    }
+
+    public String getAllData(File file) {
+        BufferedReader reader = null;
+        try {
+            reader = new BufferedReader(new FileReader(file));
+
+            StringBuilder wholeData = new StringBuilder();
+            String line;
+
+            while ((line = reader.readLine()) != null)
+                wholeData.append(line).append("\n");
+
+            return wholeData.toString();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return null;
     }
 
     @Override

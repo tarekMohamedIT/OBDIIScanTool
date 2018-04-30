@@ -25,5 +25,4 @@ public class BluetoothActivity extends AppCompatActivity {
         recyclerView.setAdapter(Badapter);
     }
 
-
 }

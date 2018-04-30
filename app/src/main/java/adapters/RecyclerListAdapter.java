@@ -2,18 +2,16 @@ package adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
-import android.util.TypedValue;
-import android.view.Gravity;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+
+import events.OnItemClickListener;
 
 /**
  * Created by tarek on 1/5/18.
@@ -50,6 +48,11 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     public void addItem(ListItem item, int position) {
         itemArrayList.add(position, item);
         notifyItemInserted(position);
+    }
+
+    public void changeImage(int position, int imageResID) {
+        this.itemArrayList.get(position).setResImageID(imageResID);
+        notifyItemChanged(position);
     }
 
     public void removeItem(int position) {
@@ -138,27 +141,6 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         return itemArrayList.size();
     }
 
-    public class ListRecyclerViewHolder extends RecyclerView.ViewHolder {
-
-        View view;
-        ImageView imageView;
-
-        public ListRecyclerViewHolder(View itemView) {
-            super(itemView);
-            view = ((FrameLayout) itemView).getChildAt(0);
-        }
-
-        public ListRecyclerViewHolder(View itemView, int mode) {
-            super(itemView);
-            view = ((RelativeLayout) itemView).getChildAt(1);
-            imageView = (ImageView) ((RelativeLayout) itemView).getChildAt(0);
-        }
-    }
-
-    public interface OnItemClickListener {
-        void onClick(int position);
-    }
-
     public static class ListItem {
         int mode;
         int resImageID;
@@ -197,6 +179,23 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
 
         public void setFontSize(int fontSize) {
             this.fontSize = fontSize;
+        }
+    }
+
+    public class ListRecyclerViewHolder extends RecyclerView.ViewHolder {
+
+        View view;
+        ImageView imageView;
+
+        public ListRecyclerViewHolder(View itemView) {
+            super(itemView);
+            view = ((FrameLayout) itemView).getChildAt(0);
+        }
+
+        public ListRecyclerViewHolder(View itemView, int mode) {
+            super(itemView);
+            view = ((RelativeLayout) itemView).getChildAt(1);
+            imageView = (ImageView) ((RelativeLayout) itemView).getChildAt(0);
         }
     }
 }
