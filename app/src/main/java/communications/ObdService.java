@@ -5,7 +5,6 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -29,7 +28,7 @@ public class ObdService extends Service {
 
     boolean isReadingRealData;
     boolean dataVerified;
-    String JsonData;
+    String jsonData;
     BluetoothDevice device;
 
     ArrayList<GeneralInformationModel> generalInformations;
@@ -45,8 +44,8 @@ public class ObdService extends Service {
         Log.e("Service", "Started with command : " + command);
 
         if (command == COMMAND_JSON) {
-            JsonData = intent.getStringExtra("json");
-            if (JsonData != null && !JsonData.equals("")) {
+            jsonData = intent.getStringExtra("json");
+            if (jsonData != null && !jsonData.equals("")) {
                 Toast.makeText(this, "Json data inserted!", Toast.LENGTH_LONG).show();
                 dataVerified = true;
             } else {
@@ -58,7 +57,7 @@ public class ObdService extends Service {
             device = null;
             isReadingRealData = false;
         } else if (command == COMMAND_BLUETOOTH) {
-            JsonData = null;
+            jsonData = null;
             device = intent.getParcelableExtra("device");
             isReadingRealData = true;
             Toast.makeText(this, "Device is ready!", Toast.LENGTH_LONG).show();
@@ -86,7 +85,7 @@ public class ObdService extends Service {
         if (makeNew || generalInformations == null) {
             try {
                 generalInformations = new ArrayList<>();
-                JSONArray array = new JSONObject(PreferenceManager.getDefaultSharedPreferences(this).getString("json", "")).getJSONArray("car1");
+                JSONArray array = new JSONObject(jsonData).getJSONArray("car1");
                 for (int j = 0; j < array.length(); j += 8) {
                     for (int i = 0; i < 8; i++) {
                         JSONObject gaugeObject = array.getJSONObject(i + j);
