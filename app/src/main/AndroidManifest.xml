@@ -41,7 +41,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".TripEndActivity"></activity>
+        <activity android:name=".TripEndActivity" />
+
+        <service
+            android:name="communications.ObdService"
+            android:enabled="true"
+            android:exported="false" />
     </application>
 
 </manifest>

@@ -38,6 +38,12 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
         notifyItemInserted(generalInformationModelArrayList.size() - 1);
     }
 
+    public void replaceAll(ArrayList<GeneralInformationModel> models) {
+        generalInformationModelArrayList.clear();
+        generalInformationModelArrayList.addAll(models);
+        modifyItems();
+    }
+
     public void modifyItems() {
         notifyDataSetChanged();
     }

@@ -1,5 +1,9 @@
 package models;
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
@@ -7,7 +11,7 @@ import java.util.Random;
  * Created by tarek on 3/13/18.
  */
 
-public class GeneralInformationModel {
+public class GeneralInformationModel implements Parcelable {
     private int type;
     private String headline;
     private List<Float> values;
@@ -24,6 +28,27 @@ public class GeneralInformationModel {
                 this.maxValue = number;
 
         usedValue = -1;
+    }
+
+    public static final Creator<GeneralInformationModel> CREATOR = new Creator<GeneralInformationModel>() {
+        @Override
+        public GeneralInformationModel createFromParcel(Parcel in) {
+            return new GeneralInformationModel(in);
+        }
+
+        @Override
+        public GeneralInformationModel[] newArray(int size) {
+            return new GeneralInformationModel[size];
+        }
+    };
+
+    protected GeneralInformationModel(Parcel in) {
+        type = in.readInt();
+        headline = in.readString();
+        maxValue = in.readFloat();
+        usedValue = in.readInt();
+        values = new ArrayList<>();
+        in.readList(values, null);
     }
 
     public int getType() {
@@ -75,5 +100,19 @@ public class GeneralInformationModel {
 
     public float getMaxValue() {
         return maxValue;
+    }
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel parcel, int i) {
+        parcel.writeInt(type);
+        parcel.writeString(headline);
+        parcel.writeFloat(maxValue);
+        parcel.writeInt(usedValue);
+        parcel.writeList(values);
     }
 }

@@ -1,9 +1,7 @@
 package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
@@ -21,6 +19,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import adapters.RecyclerListAdapter;
+import communications.ObdService;
 import dialogs.MethodSelectionDialog;
 import events.OnItemClickListener;
 
@@ -29,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerListAdapter adapter;
     RecyclerView recyclerView;
     Button refreshButton;
+    Intent obdIntent;
 
     MethodSelectionDialog dialog;
 
@@ -36,9 +36,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        obdIntent = new Intent(this, ObdService.class);
 
         ArrayList<RecyclerListAdapter.ListItem> listItems = new ArrayList<>();
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_FULL, R.drawable.ic_bluetoothvector,21));
+        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_FULL, R.drawable.bluetoothvector, 21));
         listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_change_input, 21));
         listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_generalinfo,21));
         listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_faultcodes,21));
@@ -50,7 +51,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(int position) {
                 switch (position){
                     case 0 :
-                        if (adapter.getItem(position).getResImageID() == R.drawable.ic_bluetoothvector)
+                        if (adapter.getItem(position).getResImageID() == R.drawable.bluetoothvector)
                             startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
                         else {
@@ -59,11 +60,10 @@ public class MainActivity extends AppCompatActivity {
                                 @Override
                                 public void onDismiss(File file) {
                                     if (file != null && file.getName().toLowerCase().endsWith(".json")) {
-                                        SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
-                                        preferences.edit().putString("json", getAllData(file)).apply();
-                                        new AlertDialog.Builder(MainActivity.this)
-                                                .setTitle("done").setMessage("Json file is set successfully!")
-                                                .setNeutralButton("Ok", null).show();
+                                        obdIntent.putExtra("cmd", ObdService.COMMAND_JSON);
+                                        obdIntent.putExtra("json", getAllData(file));
+                                        startService(obdIntent);
+
                                     } else if (file == null) {
                                         new AlertDialog.Builder(MainActivity.this)
                                                 .setTitle("error").setMessage("You didn't select a file!")
@@ -101,9 +101,9 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(int position) {
                 if (position == 0)
-                    adapter.changeImage(0, R.drawable.ic_jsonvector);
+                    adapter.changeImage(0, R.drawable.jsonvector);
                 else
-                    adapter.changeImage(0, R.drawable.ic_bluetoothvector);
+                    adapter.changeImage(0, R.drawable.bluetoothvector);
 
                 dialog.dismiss();
             }
