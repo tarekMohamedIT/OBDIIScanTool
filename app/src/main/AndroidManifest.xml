@@ -47,6 +47,8 @@
             android:name="communications.ObdService"
             android:enabled="true"
             android:exported="false" />
+
+        <activity android:name=".Select_json"></activity>
     </application>
 
 </manifest>

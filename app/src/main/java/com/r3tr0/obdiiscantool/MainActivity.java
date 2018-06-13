@@ -55,28 +55,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
                         else {
-                            FileDialog dialog = new FileDialog(MainActivity.this);
-                            dialog.setOnDialogFinishListener(new FileDialog.OnDialogFinishListener() {
-                                @Override
-                                public void onDismiss(File file) {
-                                    if (file != null && file.getName().toLowerCase().endsWith(".json")) {
-                                        obdIntent.putExtra("cmd", ObdService.COMMAND_JSON);
-                                        obdIntent.putExtra("json", getAllData(file));
-                                        startService(obdIntent);
-
-                                    } else if (file == null) {
-                                        new AlertDialog.Builder(MainActivity.this)
-                                                .setTitle("error").setMessage("You didn't select a file!")
-                                                .setNeutralButton("Ok", null).show();
-                                    } else if (!file.getName().toLowerCase().endsWith(".json")) {
-                                        new AlertDialog.Builder(MainActivity.this)
-                                                .setTitle("error").setMessage("The selected file is not a JSON file!")
-                                                .setNeutralButton("Ok", null).show();
-                                    }
-                                }
-                            });
-
-                            dialog.showDialog();
+                            startActivity(new Intent(MainActivity.this, Select_json.class));
                         }
                         break;
 

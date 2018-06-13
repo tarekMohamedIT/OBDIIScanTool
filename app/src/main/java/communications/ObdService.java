@@ -45,6 +45,7 @@ public class ObdService extends Service {
 
         if (command == COMMAND_JSON) {
             jsonData = intent.getStringExtra("json");
+            Log.e("jason_data",jsonData);
             if (jsonData != null && !jsonData.equals("")) {
                 Toast.makeText(this, "Json data inserted!", Toast.LENGTH_LONG).show();
                 dataVerified = true;
