@@ -2,14 +2,11 @@ package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.widget.Button;
-
-import com.r3tr0.popups.dialogs.FileDialog;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -55,7 +52,7 @@ public class MainActivity extends AppCompatActivity {
                             startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
                         else {
-                            startActivity(new Intent(MainActivity.this, Select_json.class));
+                            startActivity(new Intent(MainActivity.this, SelectJsonActivity.class));
                         }
                         break;
 

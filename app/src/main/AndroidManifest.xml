@@ -48,7 +48,7 @@
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name=".Select_json"></activity>
+        <activity android:name=".SelectJsonActivity"></activity>
     </application>
 
 </manifest>
