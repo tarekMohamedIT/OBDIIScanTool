@@ -16,6 +16,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import communications.ObdService;
+import enums.ServiceCommand;
 
 public class SelectJsonActivity extends AppCompatActivity {
     Intent obdIntent;
@@ -36,7 +37,7 @@ public class SelectJsonActivity extends AppCompatActivity {
                     @Override
                     public void onDismiss(File file) {
                         if (file != null && file.getName().toLowerCase().endsWith(".json")) {
-                            obdIntent.putExtra("cmd", ObdService.COMMAND_JSON);
+                            obdIntent.putExtra("cmd", ServiceCommand.initializeJson);
                             obdIntent.putExtra("json", getAllData(file));
                             startService(obdIntent);
 

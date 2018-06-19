@@ -1,7 +1,9 @@
 package communications;
 
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.IBinder;
@@ -13,62 +15,94 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
-import models.GeneralInformationModel;
+import enums.ServiceCommand;
+import enums.ServiceFlag;
+import models.GeneralInformation;
 
 public class ObdService extends Service {
-    public static final int COMMAND_JSON = 0;
-    public static final int COMMAND_BLUETOOTH = 1;
-    public static final int COMMAND_READ_ALL = 2;
-
-    public static final int TYPE_GENERAL_INFO = 0;
-    public static final int TYPE_FAULT_CODE = 1;
-
     boolean isReadingRealData;
     boolean dataVerified;
     String jsonData;
-    BluetoothDevice device;
 
-    ArrayList<GeneralInformationModel> generalInformations;
+    public static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
+    public static final String RECEIVER_ACTION = "com.r3tr0.bluetoothterminal.communications.OBD";
 
+    private Intent intent1;
+    private BluetoothServerSocket serverSocket;
+    private BluetoothSocket bluetoothSocket;
+    private InputStream inputStream;
+    private OutputStream outputStream;
+
+    private ReadingThread readingThread;
+
+    private ServiceFlag flag = ServiceFlag.disconnected;
 
     public ObdService() {
     }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        int command = intent.getIntExtra("cmd", -1);
+        ServiceCommand command = (ServiceCommand) intent.getSerializableExtra("cmd");
 
         Log.e("Service", "Started with command : " + command);
 
-        if (command == COMMAND_JSON) {
-            jsonData = intent.getStringExtra("json");
-            Log.e("jason_data",jsonData);
-            if (jsonData != null && !jsonData.equals("")) {
-                Toast.makeText(this, "Json data inserted!", Toast.LENGTH_LONG).show();
-                dataVerified = true;
-            } else {
-                Toast.makeText(this, "Json data does not exist!", Toast.LENGTH_LONG).show();
-                Log.e("dsa", "inserted");
-                dataVerified = false;
-            }
-
-            device = null;
+        if (command == ServiceCommand.initializeJson) {
             isReadingRealData = false;
-        } else if (command == COMMAND_BLUETOOTH) {
+            initializeJson(intent.getStringExtra("json"));
+            this.flag = ServiceFlag.readingJson;
+        } else if (command == ServiceCommand.initializeBluetooth) {
             jsonData = null;
-            device = intent.getParcelableExtra("device");
+            this.flag = ServiceFlag.disconnected;
+            initializeBluetooth((BluetoothDevice) intent.getParcelableExtra("device"));
             isReadingRealData = true;
-            Toast.makeText(this, "Device is ready!", Toast.LENGTH_LONG).show();
-        } else if (command == COMMAND_READ_ALL) {
-            if (intent.getIntExtra("type", -1) == TYPE_GENERAL_INFO) {
-                Intent intent1 = new Intent("com.r3tr0.obdiiscantool.Obd");
-                intent1.putExtra("type", "general");
-                intent1.putExtra("data", getAllGeneralInformationItems(false));
-                sendBroadcast(intent1);
+            if (flag == ServiceFlag.connected)
+                readingThread = new ReadingThread();
+        } else if (command == ServiceCommand.disconnect) {
+            if (bluetoothSocket != null)
+                try {
+                    inputStream = null;
+                    outputStream = null;
+                    bluetoothSocket.close();
+                    bluetoothSocket = null;
+                    flag = ServiceFlag.disconnected;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+        } else if (command == ServiceCommand.startReading) {
+            if (isReadingRealData && flag == ServiceFlag.connected) {
+                this.readingThread.start();
             }
+        } else if (command == ServiceCommand.stopReading) {
+            if (isReadingRealData) {
+                this.readingThread.stopReading();
+            }
+        } else if (command == ServiceCommand.write) {
+            String data = intent.getStringExtra("data");
+            if (isReadingRealData) {
+                try {
+                    write((data + "\r").getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                intent1.putExtra("data", readJsonFile(data));
+                sendBroadcast(intent1);
+                intent1.removeExtra("data");
+            }
+        } else if (command == ServiceCommand.getPairedDevices) {
+            intent1.putExtra("devices", getAllPairedDevices());
+            sendBroadcast(intent1);
+            intent1.removeExtra("devices");
+        } else if (command == ServiceCommand.getStatus) {
+            intent1.putExtra("status", flag);
+            sendBroadcast(intent1);
+            intent1.removeExtra("status");
         } else {
             Toast.makeText(this, "Please put a command in the intent as integer extra", Toast.LENGTH_LONG).show();
         }
@@ -81,41 +115,155 @@ public class ObdService extends Service {
         return null;
     }
 
-    private ArrayList<GeneralInformationModel> getAllGeneralInformationItems(boolean makeNew) {
-
-        if (makeNew || generalInformations == null) {
-            try {
-                generalInformations = new ArrayList<>();
-                JSONArray array = new JSONObject(jsonData).getJSONArray("car1");
-                for (int j = 0; j < array.length(); j += 8) {
-                    for (int i = 0; i < 8; i++) {
-                        JSONObject gaugeObject = array.getJSONObject(i + j);
-                        if (j == 0)
-                            generalInformations.add(new GeneralInformationModel(0, gaugeObject.getString("name"), new ArrayList<Float>()));
-                        generalInformations.get(i).addValue((float) gaugeObject.getDouble("value"));
-                    }
+    private ArrayList<GeneralInformation> getAllGeneralInformationItems() {
+        ArrayList<GeneralInformation> generalInformations = new ArrayList<>();
+        try {
+            JSONArray array = new JSONObject(jsonData).getJSONArray("car1");
+            for (int j = 0; j < array.length(); j += 8) {
+                for (int i = 0; i < 8; i++) {
+                    JSONObject gaugeObject = array.getJSONObject(i + j);
+                    if (j == 0)
+                        generalInformations.add(new GeneralInformation(0, gaugeObject.getString("name"), new ArrayList<Float>()));
+                    generalInformations.get(i).addValue((float) gaugeObject.getDouble("value"));
                 }
-
-
-            } catch (JSONException e) {
-                e.printStackTrace();
             }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
 
         return generalInformations;
-
     }
 
-    private class BluetoothConnection {
-        BluetoothSocket bluetoothSocket;
+    public void initializeBluetooth(BluetoothDevice device) {
+        //Server socket initialized
+        try {
+            intent1.putExtra("status", ServiceFlag.connecting);
+            sendBroadcast(intent1);
+            intent1.removeExtra("status");
+            bluetoothSocket = device.createRfcommSocketToServiceRecord(myUUID);
+            bluetoothSocket.connect();
+            if (!bluetoothSocket.isConnected()) {
+                bluetoothSocket = null;
+                throw new IOException("Failed to connect to this device");
+            }
+            InputStream tempIn = null;
+            OutputStream tempOut = null;
 
-        public BluetoothConnection() {
             try {
-                bluetoothSocket = device.createRfcommSocketToServiceRecord(UUID.fromString("00001101-0000-1000-8000-00805F9B34FB"));
-                bluetoothSocket.connect();
+                tempIn = bluetoothSocket.getInputStream();
+                tempOut = bluetoothSocket.getOutputStream();
             } catch (IOException e) {
                 e.printStackTrace();
+                intent1.putExtra("status", ServiceFlag.connectionFailed);
+                sendBroadcast(intent1);
+                intent1.removeExtra("status");
+                flag = ServiceFlag.connectionFailed;
+                bluetoothSocket.close();
+                bluetoothSocket = null;
+            }
+
+            inputStream = tempIn;
+            outputStream = tempOut;
+
+            flag = ServiceFlag.connected;
+            intent1.putExtra("status", ServiceFlag.connected);
+            sendBroadcast(intent1);
+            intent1.removeExtra("status");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            flag = ServiceFlag.connectionFailed;
+            intent1.putExtra("status", ServiceFlag.connectionFailed);
+            sendBroadcast(intent1);
+            intent1.removeExtra("status");
+            bluetoothSocket = null;
+        }
+
+    }
+
+    public void initializeJson(String jsonData) {
+        this.jsonData = jsonData;
+    }
+
+    public void write(byte[] bytes) throws IOException {
+        Log.e("sent data as bytes ", Arrays.toString(bytes));
+        outputStream.write(bytes);
+        outputStream.flush();
+    }
+
+    public ArrayList readJsonFile(String type) {
+        if (type.equals("general"))
+            return getAllGeneralInformationItems();
+
+        return null;
+    }
+
+    public ArrayList<BluetoothDevice> getAllPairedDevices() {
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        Log.e("bt", "size of paired : " + mBluetoothAdapter.getBondedDevices().size());
+        return new ArrayList<>(mBluetoothAdapter.getBondedDevices());
+    }
+
+    private class ReadingThread extends Thread {
+        private volatile boolean isStop = true;
+
+        @Override
+        public synchronized void start() {
+            super.start();
+            isStop = true;
+        }
+
+        @Override
+        public void run() {
+            super.run();
+
+            char c;
+            while (isStop) {
+                try {
+                    byte b = 0;
+                    StringBuilder res = new StringBuilder();
+                    while (((b = (byte) inputStream.read()) > -1)) {
+                        c = (char) b;
+                        if (c == '>') // read until '>' arrives
+                        {
+                            break;
+                        }
+                        Log.e("Data", c + "");
+                        res.append(c);
+                        if (res.toString().matches("TDA[0-9]+\\sV[0-9]+\\.[0-9]+\\s"))
+                            break;
+                    }
+
+                    String result = res.toString().replaceAll("SEARCHING\\.+", "");
+                    result = result.replaceAll("\\s", "");
+                    result = result.replaceAll("(BUS INIT)|(BUSINIT)|(\\.)", "");
+
+                    if (result.length() > 0) {
+                        Log.e("test thread", "read");
+                        intent1.putExtra("data", result);
+                        sendBroadcast(intent1);
+                        intent1.removeExtra("data");
+                    } else {
+                        Log.e("test thread", "read");
+                        intent1.putExtra("data", "");
+                        sendBroadcast(intent1);
+                        intent1.removeExtra("data");
+                    }
+                    //bytes = inputStream.read(buffer);
+                    //tempMsg = new String(buffer,0,bytes);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
+
+        public void stopReading() {
+            this.isStop = false;
+        }
     }
+
+
 }

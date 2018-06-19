@@ -15,10 +15,10 @@ import java.util.ArrayList;
 import adapters.GeneralInformationAdapter;
 import communications.ObdReceiver;
 import communications.ObdService;
+import enums.ServiceCommand;
 import events.OnBroadcastReceivedListener;
-import models.GeneralInformationModel;
 
-public class GeneralInformation extends AppCompatActivity {
+public class GeneralInformationActivity extends AppCompatActivity {
 
     GeneralInformationAdapter generalInformationAdapter;
     ObdReceiver receiver;
@@ -29,16 +29,14 @@ public class GeneralInformation extends AppCompatActivity {
         setContentView(R.layout.activity_general_information);
         RecyclerView recyclerView =findViewById(R.id.GeneralInformation);
 
-        ArrayList<GeneralInformationModel> arrayList = new ArrayList<>();
+        ArrayList<models.GeneralInformation> arrayList = new ArrayList<>();
         generalInformationAdapter = new GeneralInformationAdapter(this, arrayList);
 
         receiver = new ObdReceiver(new OnBroadcastReceivedListener() {
             @Override
             public void onBroadcastReceived(Object message) {
                 Intent intent = (Intent) message;
-                if (intent.getStringExtra("type").equals("general")) {
-                    generalInformationAdapter.replaceAll(intent.<GeneralInformationModel>getParcelableArrayListExtra("data"));
-                }
+                generalInformationAdapter.replaceAll(intent.<models.GeneralInformation>getParcelableArrayListExtra("data"));
             }
         });
 
@@ -58,8 +56,8 @@ public class GeneralInformation extends AppCompatActivity {
         super.onResume();
         registerReceiver(receiver, new IntentFilter("com.r3tr0.obdiiscantool.Obd"));
         Intent intent = new Intent(this, ObdService.class);
-        intent.putExtra("cmd", ObdService.COMMAND_READ_ALL);
-        intent.putExtra("type", ObdService.TYPE_GENERAL_INFO);
+        intent.putExtra("cmd", ServiceCommand.write);
+        intent.putExtra("data", "general");
         startService(intent);
         Log.e("test", "resumed");
     }

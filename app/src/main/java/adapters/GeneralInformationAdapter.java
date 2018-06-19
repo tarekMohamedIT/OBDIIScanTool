@@ -12,7 +12,7 @@ import com.r3tr0.obdiiscantool.R;
 
 import java.util.ArrayList;
 
-import models.GeneralInformationModel;
+import models.GeneralInformation;
 
 /**
  * Created by tarek on 3/13/18.
@@ -26,21 +26,21 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
 
     private Context context;
 
-    private ArrayList<GeneralInformationModel> generalInformationModelArrayList;
+    private ArrayList<GeneralInformation> generalInformationArrayList;
 
-    public GeneralInformationAdapter(Context context, ArrayList<GeneralInformationModel> generalInformationModelArrayList) {
+    public GeneralInformationAdapter(Context context, ArrayList<GeneralInformation> generalInformationArrayList) {
         this.context = context;
-        this.generalInformationModelArrayList = generalInformationModelArrayList;
+        this.generalInformationArrayList = generalInformationArrayList;
     }
 
-    public void add(GeneralInformationModel model){
-        generalInformationModelArrayList.add(model);
-        notifyItemInserted(generalInformationModelArrayList.size() - 1);
+    public void add(GeneralInformation model) {
+        generalInformationArrayList.add(model);
+        notifyItemInserted(generalInformationArrayList.size() - 1);
     }
 
-    public void replaceAll(ArrayList<GeneralInformationModel> models) {
-        generalInformationModelArrayList.clear();
-        generalInformationModelArrayList.addAll(models);
+    public void replaceAll(ArrayList<GeneralInformation> models) {
+        generalInformationArrayList.clear();
+        generalInformationArrayList.addAll(models);
         modifyItems();
     }
 
@@ -58,17 +58,17 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
     public void onBindViewHolder(GeneralInformationViewHolder holder, int position) {
         final GeneralInformationViewHolder tmp = holder;
 
-        holder.headlineTextView.setText(generalInformationModelArrayList.get(position).getHeadline());
+        holder.headlineTextView.setText(generalInformationArrayList.get(position).getHeadline());
         holder.gauge.setCurrentProgress(0);
-        holder.gauge.setTotalProgress(generalInformationModelArrayList.get(position).getMaxValue());
-        float val = generalInformationModelArrayList.get(position).generateValue();
+        holder.gauge.setTotalProgress(generalInformationArrayList.get(position).getMaxValue());
+        float val = generalInformationArrayList.get(position).generateValue();
         holder.gauge.setCurrentProgress(val);
-        holder.valueTextView.setText(String.format("%s/%s", val, generalInformationModelArrayList.get(position).getMaxValue()));
+        holder.valueTextView.setText(String.format("%s/%s", val, generalInformationArrayList.get(position).getMaxValue()));
     }
 
     @Override
     public int getItemCount() {
-        return generalInformationModelArrayList.size();
+        return generalInformationArrayList.size();
     }
 
     public class GeneralInformationViewHolder extends RecyclerView.ViewHolder{
