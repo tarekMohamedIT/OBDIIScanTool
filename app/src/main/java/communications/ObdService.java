@@ -50,6 +50,8 @@ public class ObdService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         ServiceCommand command = (ServiceCommand) intent.getSerializableExtra("cmd");
 
+        if (intent1 == null)
+            intent1 = new Intent(RECEIVER_ACTION);
         Log.e("Service", "Started with command : " + command);
 
         if (command == ServiceCommand.initializeJson) {

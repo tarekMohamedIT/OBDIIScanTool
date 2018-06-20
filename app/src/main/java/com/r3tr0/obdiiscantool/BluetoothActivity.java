@@ -16,7 +16,7 @@ public class BluetoothActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_bluetooth);
         RecyclerView recyclerView =findViewById(R.id.bluetoothRecyclerView);
-        ArrayList arrayList =new ArrayList<String>();
+        ArrayList arrayList = new ArrayList<String>();
         arrayList.add("Redmi");
         arrayList.add("Microsoft");
         arrayList.add("HC-06");
@@ -24,5 +24,4 @@ public class BluetoothActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(Badapter);
     }
-
 }

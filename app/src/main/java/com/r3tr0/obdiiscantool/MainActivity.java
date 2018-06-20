@@ -1,12 +1,13 @@
 package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Button;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,16 +17,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import adapters.RecyclerListAdapter;
+import communications.ObdReceiver;
 import communications.ObdService;
 import dialogs.MethodSelectionDialog;
 import enums.RecyclerListAdapterMode;
+import enums.ServiceCommand;
+import enums.ServiceFlag;
+import events.OnBroadcastReceivedListener;
 import events.OnItemClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
     RecyclerListAdapter adapter;
     RecyclerView recyclerView;
-    Button refreshButton;
+    ObdReceiver receiver;
     Intent obdIntent;
 
     MethodSelectionDialog dialog;
@@ -34,10 +39,23 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         obdIntent = new Intent(this, ObdService.class);
+        receiver = new ObdReceiver(new OnBroadcastReceivedListener() {
+            @Override
+            public void onBroadcastReceived(Object message) {
+                Intent intent = (Intent) message;
+
+                String status = ((ServiceFlag) intent.getSerializableExtra("status")).name();
+
+                if (status != null) {
+                    adapter.changeSubTitle(0, status);
+                }
+            }
+        });
 
         ArrayList<RecyclerListAdapter.ListItem> listItems = new ArrayList<>();
-        listItems.add(new RecyclerListAdapter.ListItem("Bluetooth", "Not connected", RecyclerListAdapterMode.fullWithTitleAndSubTitleMode, R.drawable.btnew));
+        listItems.add(new RecyclerListAdapter.ListItem("Bluetooth", "Not connected", RecyclerListAdapterMode.fullWithTitleAndSubTitleMode, R.drawable.btnew, Color.parseColor("#ff22569f")));
         listItems.add(new RecyclerListAdapter.ListItem("change input", "", RecyclerListAdapterMode.partMode, R.drawable.ic_change_input));
         listItems.add(new RecyclerListAdapter.ListItem("general info", "", RecyclerListAdapterMode.partMode, R.drawable.ic_generalinfo));
         listItems.add(new RecyclerListAdapter.ListItem("fault codes", "", RecyclerListAdapterMode.partMode, R.drawable.ic_faultcodes));
@@ -77,10 +95,15 @@ public class MainActivity extends AppCompatActivity {
         dialog = new MethodSelectionDialog(MainActivity.this, new OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                if (position == 0)
-                    adapter.changeImage(0, R.drawable.jsonvector);
-                else
+                if (position == 0) {
+                    adapter.changeImage(0, R.drawable.jsonew);
+                    adapter.changeColor(0, Color.parseColor("#ff634016"));
+                    adapter.changeTitle(0, "Json files");
+                } else {
                     adapter.changeImage(0, R.drawable.btnew);
+                    adapter.changeColor(0, Color.parseColor("#ff22569f"));
+                    adapter.changeTitle(0, "Bluetooth");
+                }
 
                 dialog.dismiss();
             }
@@ -133,6 +156,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(receiver, new IntentFilter(ObdService.RECEIVER_ACTION));
+
+        obdIntent.putExtra("cmd", ServiceCommand.getStatus);
+        startService(obdIntent);
+        obdIntent.removeExtra("cmd");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
     }
 
     @Override

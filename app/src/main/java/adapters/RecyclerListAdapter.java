@@ -56,6 +56,21 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         notifyItemChanged(position);
     }
 
+    public void changeColor(int position, Integer color) {
+        this.itemArrayList.get(position).setColor(color);
+        notifyItemChanged(position);
+    }
+
+    public void changeTitle(int position, String title) {
+        this.itemArrayList.get(position).title = title;
+        notifyItemChanged(position);
+    }
+
+    public void changeSubTitle(int position, String subtitle) {
+        this.itemArrayList.get(position).subTitle = subtitle;
+        notifyItemChanged(position);
+    }
+
     public void removeItem(int position) {
         itemArrayList.remove(position);
         notifyItemRemoved(position);
@@ -135,6 +150,9 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             holder.title.setText(itemArrayList.get(pos).title);
             holder.subtitle.setText(itemArrayList.get(pos).subTitle);
         }
+
+        if (itemArrayList.get(position).getColor() != null)
+            holder.itemView.setBackgroundColor(itemArrayList.get(position).color);
     }
 
     @Override
@@ -147,16 +165,9 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         String subTitle;
         RecyclerListAdapterMode mode;
         int resImageID;
+        Integer color;
 
         private ListItem() {
-
-        }
-
-        public ListItem(String title, String subTitle, RecyclerListAdapterMode mode, int resImageID) {
-            this.title = title;
-            this.subTitle = subTitle;
-            this.mode = mode;
-            this.resImageID = resImageID;
         }
 
         public ListItem(RecyclerListAdapterMode mode, int resImageID) {
@@ -164,6 +175,29 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             this.subTitle = "";
             this.mode = mode;
             this.resImageID = resImageID;
+            this.color = null;
+        }
+
+        public ListItem(RecyclerListAdapterMode mode, int resImageID, Integer color) {
+            this.mode = mode;
+            this.resImageID = resImageID;
+            this.color = color;
+        }
+
+        public ListItem(String title, String subTitle, RecyclerListAdapterMode mode, int resImageID) {
+            this.title = title;
+            this.subTitle = subTitle;
+            this.mode = mode;
+            this.resImageID = resImageID;
+            this.color = null;
+        }
+
+        public ListItem(String title, String subTitle, RecyclerListAdapterMode mode, int resImageID, Integer color) {
+            this.title = title;
+            this.subTitle = subTitle;
+            this.mode = mode;
+            this.resImageID = resImageID;
+            this.color = color;
         }
 
         public RecyclerListAdapterMode getMode() {
@@ -186,8 +220,24 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             return title;
         }
 
+        public void setTitle(String title) {
+            this.title = title;
+        }
+
         public String getSubTitle() {
             return subTitle;
+        }
+
+        public void setSubTitle(String subTitle) {
+            this.subTitle = subTitle;
+        }
+
+        public Integer getColor() {
+            return color;
+        }
+
+        public void setColor(Integer color) {
+            this.color = color;
         }
     }
 
@@ -201,7 +251,6 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
         public ListRecyclerViewHolder(View itemView, int mode) {
             super(itemView);
             imageView = (ImageView) ((ViewGroup) itemView).getChildAt(0);
-
             if (mode == RecyclerListAdapterMode.fullWithTitleAndSubTitleMode.getValue()) {
                 title = itemView.findViewById(R.id.titleTextview);
                 subtitle = itemView.findViewById(R.id.subtitleTextView);
