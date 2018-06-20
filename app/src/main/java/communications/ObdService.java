@@ -31,7 +31,7 @@ public class ObdService extends Service {
     String jsonData;
 
     public static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-    public static final String RECEIVER_ACTION = "com.r3tr0.bluetoothterminal.communications.OBD";
+    public static final String RECEIVER_ACTION = "com.r3tr0.OBDIIScanTool.communications.OBD";
 
     private Intent intent1;
     private BluetoothServerSocket serverSocket;

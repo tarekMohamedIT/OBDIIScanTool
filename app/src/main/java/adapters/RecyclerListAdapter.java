@@ -1,16 +1,20 @@
 package adapters;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.TextView;
+
+import com.r3tr0.obdiiscantool.R;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import enums.RecyclerListAdapterMode;
 import events.OnItemClickListener;
 
 /**
@@ -18,11 +22,8 @@ import events.OnItemClickListener;
  */
 
 public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapter.ListRecyclerViewHolder> {
-
-    public static final int MODE_FULL = 0;
-    public static final int MODE_PART = 1;
-
     private Context context;
+    private LayoutInflater inflater;
     private ArrayList<ListItem> itemArrayList;
     private OnItemClickListener onItemClickListener;
 
@@ -76,30 +77,26 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
 
     @Override
     public int getItemViewType(int position) {
-        return itemArrayList.get(position).getMode();
+        return itemArrayList.get(position).getMode().getValue();
     }
 
+    @NonNull
     @Override
-    public ListRecyclerViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        ViewGroup layout;
-        ImageView imageView = new ImageView(context);
+    public ListRecyclerViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (inflater == null)
+            inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        View view;
 
-        if (viewType == MODE_FULL) {
-            layout = new RelativeLayout(context);
-            layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            imageView.setLayoutParams(params);
-            layout.addView(imageView);
-
-        } else {
-            layout = new RelativeLayout(context);
-            layout.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
-
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-            imageView.setLayoutParams(params);
-            layout.addView(imageView);
+        if (viewType == 0) {//full
+            view = inflater.inflate(R.layout.item_full, parent, false);
+        } else if (viewType == 1) {//full with title and sub title
+            view = inflater.inflate(R.layout.item_full_title_subtitle, parent, false);
+        } else {//part
+            view = inflater.inflate(R.layout.item_part, parent, false);
         }
+
+        return new ListRecyclerViewHolder(view, viewType);
+
 /*
         else {
 
@@ -120,20 +117,24 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             layout.addView(imageView);
         }*/
 
-        return new ListRecyclerViewHolder(layout, viewType);
     }
 
     @Override
     public void onBindViewHolder(ListRecyclerViewHolder holder, int position) {
+
         holder.imageView.setBackgroundResource(itemArrayList.get(position).resImageID);
         final int pos = position;
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (onItemClickListener != null) onItemClickListener.onClick(pos);
-
             }
         });
+
+        if (itemArrayList.get(position).mode == RecyclerListAdapterMode.fullWithTitleAndSubTitleMode) {
+            holder.title.setText(itemArrayList.get(pos).title);
+            holder.subtitle.setText(itemArrayList.get(pos).subTitle);
+        }
     }
 
     @Override
@@ -142,26 +143,34 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
     }
 
     public static class ListItem {
-        int mode;
+        String title;
+        String subTitle;
+        RecyclerListAdapterMode mode;
         int resImageID;
-        int fontSize = 0;
 
-        public ListItem(int mode, int resImageID) {
+        private ListItem() {
+
+        }
+
+        public ListItem(String title, String subTitle, RecyclerListAdapterMode mode, int resImageID) {
+            this.title = title;
+            this.subTitle = subTitle;
             this.mode = mode;
             this.resImageID = resImageID;
         }
 
-        public ListItem(int mode, int resImageID, int fontSize) {
+        public ListItem(RecyclerListAdapterMode mode, int resImageID) {
+            this.title = "";
+            this.subTitle = "";
             this.mode = mode;
             this.resImageID = resImageID;
-            this.fontSize = fontSize;
         }
 
-        public int getMode() {
+        public RecyclerListAdapterMode getMode() {
             return mode;
         }
 
-        public void setMode(int mode) {
+        public void setMode(RecyclerListAdapterMode mode) {
             this.mode = mode;
         }
 
@@ -173,29 +182,30 @@ public class RecyclerListAdapter extends RecyclerView.Adapter<RecyclerListAdapte
             this.resImageID = resImageID;
         }
 
-        public int getFontSize() {
-            return fontSize;
+        public String getTitle() {
+            return title;
         }
 
-        public void setFontSize(int fontSize) {
-            this.fontSize = fontSize;
+        public String getSubTitle() {
+            return subTitle;
         }
     }
 
     public class ListRecyclerViewHolder extends RecyclerView.ViewHolder {
 
-        View view;
         ImageView imageView;
+        TextView title;
+        TextView subtitle;
 
-        public ListRecyclerViewHolder(View itemView) {
-            super(itemView);
-            view = ((FrameLayout) itemView).getChildAt(0);
-        }
 
         public ListRecyclerViewHolder(View itemView, int mode) {
             super(itemView);
-            view = ((RelativeLayout) itemView).getChildAt(1);
-            imageView = (ImageView) ((RelativeLayout) itemView).getChildAt(0);
+            imageView = (ImageView) ((ViewGroup) itemView).getChildAt(0);
+
+            if (mode == RecyclerListAdapterMode.fullWithTitleAndSubTitleMode.getValue()) {
+                title = itemView.findViewById(R.id.titleTextview);
+                subtitle = itemView.findViewById(R.id.subtitleTextView);
+            }
         }
     }
 }

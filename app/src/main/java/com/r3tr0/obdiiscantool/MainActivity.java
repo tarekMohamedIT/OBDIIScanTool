@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import adapters.RecyclerListAdapter;
 import communications.ObdService;
 import dialogs.MethodSelectionDialog;
+import enums.RecyclerListAdapterMode;
 import events.OnItemClickListener;
 
 public class MainActivity extends AppCompatActivity {
@@ -36,19 +37,19 @@ public class MainActivity extends AppCompatActivity {
         obdIntent = new Intent(this, ObdService.class);
 
         ArrayList<RecyclerListAdapter.ListItem> listItems = new ArrayList<>();
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_FULL, R.drawable.bluetoothvector, 21));
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_change_input, 21));
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_generalinfo,21));
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_faultcodes,21));
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_recordatrip,21));
-
+        listItems.add(new RecyclerListAdapter.ListItem("Bluetooth", "Not connected", RecyclerListAdapterMode.fullWithTitleAndSubTitleMode, R.drawable.btnew));
+        listItems.add(new RecyclerListAdapter.ListItem("change input", "", RecyclerListAdapterMode.partMode, R.drawable.ic_change_input));
+        listItems.add(new RecyclerListAdapter.ListItem("general info", "", RecyclerListAdapterMode.partMode, R.drawable.ic_generalinfo));
+        listItems.add(new RecyclerListAdapter.ListItem("fault codes", "", RecyclerListAdapterMode.partMode, R.drawable.ic_faultcodes));
+        listItems.add(new RecyclerListAdapter.ListItem("record trips", "", RecyclerListAdapterMode.partMode, R.drawable.ic_recordatrip));
         adapter = new RecyclerListAdapter(this, listItems);
+
         adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onClick(int position) {
                 switch (position){
                     case 0 :
-                        if (adapter.getItem(position).getResImageID() == R.drawable.bluetoothvector)
+                        if (adapter.getItem(position).getResImageID() == R.drawable.btnew)
                             startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
                         else {
@@ -79,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
                 if (position == 0)
                     adapter.changeImage(0, R.drawable.jsonvector);
                 else
-                    adapter.changeImage(0, R.drawable.bluetoothvector);
+                    adapter.changeImage(0, R.drawable.btnew);
 
                 dialog.dismiss();
             }
@@ -92,8 +93,10 @@ public class MainActivity extends AppCompatActivity {
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (adapter.getItemViewType(position) == RecyclerListAdapter.MODE_FULL)
+                if (adapter.getItemViewType(position) == RecyclerListAdapterMode.fullMode.getValue()
+                        || adapter.getItemViewType(position) == RecyclerListAdapterMode.fullWithTitleAndSubTitleMode.getValue())
                     return 2;
+
                 else return 1;
             }
         });

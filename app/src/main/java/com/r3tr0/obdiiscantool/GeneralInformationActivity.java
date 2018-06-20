@@ -54,7 +54,7 @@ public class GeneralInformationActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(receiver, new IntentFilter("com.r3tr0.obdiiscantool.Obd"));
+        registerReceiver(receiver, new IntentFilter(ObdService.RECEIVER_ACTION));
         Intent intent = new Intent(this, ObdService.class);
         intent.putExtra("cmd", ServiceCommand.write);
         intent.putExtra("data", "general");
