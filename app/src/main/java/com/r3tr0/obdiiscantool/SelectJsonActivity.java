@@ -16,10 +16,17 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import communications.ObdService;
-import enums.ServiceCommand;
 
 public class SelectJsonActivity extends AppCompatActivity {
     Intent obdIntent;
+
+    Button generalInformationButton;
+    Button faultCodesButton;
+    Button acceptButton;
+
+    boolean isGeneralInformationAdded;
+    boolean isFaultCodesAdded;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -27,9 +34,14 @@ public class SelectJsonActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
 
-        Button myButton = findViewById(R.id.values);
+        //obdIntent.putExtra("cmd", ServiceCommand.initializeJson);
 
-        myButton.setOnClickListener(new View.OnClickListener() {
+        generalInformationButton = findViewById(R.id.generalButton);
+        faultCodesButton = findViewById(R.id.faultButton);
+        acceptButton = findViewById(R.id.acceptButton);
+
+
+        generalInformationButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 FileDialog dialog = new FileDialog(SelectJsonActivity.this);
@@ -37,10 +49,9 @@ public class SelectJsonActivity extends AppCompatActivity {
                     @Override
                     public void onDismiss(File file) {
                         if (file != null && file.getName().toLowerCase().endsWith(".json")) {
-                            obdIntent.putExtra("cmd", ServiceCommand.initializeJson);
-                            obdIntent.putExtra("json", getAllData(file));
+                            obdIntent.putExtra("general", getAllData(file));
                             startService(obdIntent);
-
+                            isGeneralInformationAdded = true;
                         } else if (file == null) {
                             new AlertDialog.Builder(SelectJsonActivity.this)
                                     .setTitle("error").setMessage("You didn't select a file!")
@@ -56,6 +67,7 @@ public class SelectJsonActivity extends AppCompatActivity {
                 dialog.showDialog();
             }
         });
+
 
     }
 
