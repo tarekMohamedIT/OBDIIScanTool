@@ -204,8 +204,14 @@ public class ObdService extends Service {
             sendBroadcast(intent1);
             intent1.removeExtra("status");
             bluetoothSocket = null;
+            return;
         }
 
+        if (jsonFaultCodes != null)
+            jsonFaultCodes = null;
+
+        if (jsonGeneralData != null)
+            jsonGeneralData = null;
     }
 
     public void initializeJson(String jsonGeneralData, String jsonFaultCodes) {
@@ -225,6 +231,29 @@ public class ObdService extends Service {
             this.flag = ServiceFlag.invalidFaultCodes;
             return;
         }
+
+        if (bluetoothSocket != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            inputStream = null;
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            outputStream = null;
+            try {
+                bluetoothSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            bluetoothSocket = null;
+        }
+
 
         this.flag = ServiceFlag.readingJson;
     }

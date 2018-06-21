@@ -46,6 +46,15 @@ public class BluetoothAdapter extends RecyclerView.Adapter<BluetoothAdapter.Blue
         notifyItemRemoved(position);
     }
 
+    public void clear() {
+        this.strings.clear();
+        notifyDataSetChanged();
+    }
+
+    public ArrayList<String> getStrings() {
+        return strings;
+    }
+
     public String getItem(int position) {
         return this.strings.get(position);
     }
