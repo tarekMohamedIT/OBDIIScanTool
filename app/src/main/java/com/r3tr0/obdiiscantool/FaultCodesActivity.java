@@ -10,4 +10,6 @@ public class FaultCodesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fault_codes);
     }
+
+
 }

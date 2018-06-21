@@ -27,7 +27,7 @@ public class SelectJsonActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
 
-        Button myButton = findViewById(R.id.selectss);
+        Button myButton = findViewById(R.id.values);
 
         myButton.setOnClickListener(new View.OnClickListener() {
             @Override

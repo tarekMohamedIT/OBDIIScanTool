@@ -33,6 +33,7 @@
             android:layout_below="@+id/etPass2"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="28dp"
+            android:background="@android:color/holo_green_dark"
             android:text="Login" />
 
         <TextView
