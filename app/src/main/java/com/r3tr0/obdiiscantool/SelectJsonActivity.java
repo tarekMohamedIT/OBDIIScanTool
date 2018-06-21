@@ -1,11 +1,13 @@
 package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.r3tr0.popups.dialogs.FileDialog;
 
@@ -15,10 +17,15 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 
+import communications.ObdReceiver;
 import communications.ObdService;
+import enums.ServiceCommand;
+import enums.ServiceFlag;
+import events.OnBroadcastReceivedListener;
 
 public class SelectJsonActivity extends AppCompatActivity {
     Intent obdIntent;
+    ObdReceiver receiver;
 
     Button generalInformationButton;
     Button faultCodesButton;
@@ -34,7 +41,6 @@ public class SelectJsonActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_select);
 
-        //obdIntent.putExtra("cmd", ServiceCommand.initializeJson);
 
         generalInformationButton = findViewById(R.id.generalButton);
         faultCodesButton = findViewById(R.id.faultButton);
@@ -50,7 +56,6 @@ public class SelectJsonActivity extends AppCompatActivity {
                     public void onDismiss(File file) {
                         if (file != null && file.getName().toLowerCase().endsWith(".json")) {
                             obdIntent.putExtra("general", getAllData(file));
-                            startService(obdIntent);
                             isGeneralInformationAdded = true;
                         } else if (file == null) {
                             new AlertDialog.Builder(SelectJsonActivity.this)
@@ -65,6 +70,54 @@ public class SelectJsonActivity extends AppCompatActivity {
                 });
 
                 dialog.showDialog();
+            }
+        });
+
+        faultCodesButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FileDialog dialog = new FileDialog(SelectJsonActivity.this);
+                dialog.setOnDialogFinishListener(new FileDialog.OnDialogFinishListener() {
+                    @Override
+                    public void onDismiss(File file) {
+                        if (file != null && file.getName().toLowerCase().endsWith(".json")) {
+                            obdIntent.putExtra("faults", getAllData(file));
+                            isFaultCodesAdded = true;
+                        } else if (file == null) {
+                            new AlertDialog.Builder(SelectJsonActivity.this)
+                                    .setTitle("error").setMessage("You didn't select a file!")
+                                    .setNeutralButton("Ok", null).show();
+                        } else if (!file.getName().toLowerCase().endsWith(".json")) {
+                            new AlertDialog.Builder(SelectJsonActivity.this)
+                                    .setTitle("error").setMessage("The selected file is not a JSON file!")
+                                    .setNeutralButton("Ok", null).show();
+                        }
+                    }
+                });
+
+                dialog.showDialog();
+            }
+        });
+
+        acceptButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                obdIntent.putExtra("cmd", ServiceCommand.initializeJson);
+                startService(obdIntent);
+                obdIntent.removeExtra("cmd");
+            }
+        });
+
+        receiver = new ObdReceiver(new OnBroadcastReceivedListener() {
+            @Override
+            public void onBroadcastReceived(Object message) {
+                Intent intent = (Intent) message;
+
+                ServiceFlag flag = (ServiceFlag) intent.getSerializableExtra("status");
+                Toast.makeText(SelectJsonActivity.this, flag.name(), Toast.LENGTH_LONG).show();
+
+                if (flag == ServiceFlag.readingJson)
+                    finish();
             }
         });
 
@@ -98,5 +151,17 @@ public class SelectJsonActivity extends AppCompatActivity {
         }
 
         return null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(receiver, new IntentFilter(ObdService.RECEIVER_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
     }
 }

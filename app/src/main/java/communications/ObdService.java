@@ -144,13 +144,13 @@ public class ObdService extends Service {
     private ArrayList<FaultCode> getAllFaultCodeItems() {
         ArrayList<FaultCode> faultCodes = new ArrayList<>();
         try {
-            JSONArray array = new JSONObject(jsonGeneralData).getJSONArray("Hyundai");
+            JSONArray array = new JSONObject(jsonFaultCodes).getJSONArray("Hyundai");
             for (int i = 0; i < array.length(); i++) {
                 JSONObject faultCodeObject = array.getJSONObject(i);
                 faultCodes.add(new FaultCode(
                         faultCodeObject.getString("name")
-                        , faultCodeObject.getString("description")
-                        , faultCodeObject.getString("id")));
+                        , faultCodeObject.getString("Descrption")
+                        , faultCodeObject.getString("ID")));
             }
 
 
@@ -221,6 +221,9 @@ public class ObdService extends Service {
             getAllGeneralInformationItems();
         } catch (RuntimeException e) {
             this.flag = ServiceFlag.invalidGeneralInformation;
+            intent1.putExtra("status", flag);
+            sendBroadcast(intent1);
+            intent1.removeExtra("status");
             return;
         }
 
@@ -229,6 +232,9 @@ public class ObdService extends Service {
             getAllFaultCodeItems();
         } catch (RuntimeException e) {
             this.flag = ServiceFlag.invalidFaultCodes;
+            intent1.putExtra("status", flag);
+            sendBroadcast(intent1);
+            intent1.removeExtra("status");
             return;
         }
 
@@ -256,6 +262,9 @@ public class ObdService extends Service {
 
 
         this.flag = ServiceFlag.readingJson;
+        intent1.putExtra("status", flag);
+        sendBroadcast(intent1);
+        intent1.removeExtra("status");
     }
 
     public void write(byte[] bytes) throws IOException {
