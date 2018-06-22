@@ -14,7 +14,6 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentTop="true"
         tools:context=".TripActivity"
-        android:layout_alignParentLeft="true"
         tools:ignore="RtlCompat" />
 
     <LinearLayout
@@ -88,14 +87,14 @@
         android:layout_width="wrap_content"
         android:layout_height="33dp"
         android:layout_alignStart="@+id/StartTrip"
-        android:layout_alignTop="@+id/StartTrip"
+        android:layout_below="@+id/CancelTrip"
+        android:layout_marginTop="-85dp"
         android:background="#e3e3e3"
         android:text="End Trip"
         android:textAllCaps="false"
         android:textColor="#ff85ae"
         android:textSize="15dp"
-        android:visibility="gone"
-        android:layout_alignLeft="@+id/LeftTrip"
+        android:visibility="visible"
         tools:ignore="RtlCompat,UnknownId" />
 
     <Button
@@ -103,13 +102,14 @@
         android:layout_width="wrap_content"
         android:layout_height="33dp"
         android:layout_alignEnd="@+id/StartTrip"
-        android:layout_alignTop="@+id/StartTrip"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="53dp"
         android:background="#e3e3e3"
         android:text="Cancel Trip"
         android:textAllCaps="false"
         android:textColor="#ff85ae"
         android:textSize="15dp"
-        android:visibility="gone"
+        android:visibility="visible"
         tools:ignore="RtlCompat,UnknownId" />
 
 </RelativeLayout>
