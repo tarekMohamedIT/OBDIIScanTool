@@ -17,6 +17,8 @@ import communications.ObdService;
 import enums.ServiceCommand;
 import enums.ServiceFlag;
 import events.OnBroadcastReceivedListener;
+import helpers.BaseObdCommand;
+import models.GeneralInformation;
 
 public class GeneralInformationActivity extends AppCompatActivity {
 
@@ -24,11 +26,15 @@ public class GeneralInformationActivity extends AppCompatActivity {
     ObdReceiver receiver;
     ServiceFlag flag;
 
+    ArrayList<BaseObdCommand> commands;
+    int currentWorkingIndex = -1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_general_information);
         RecyclerView recyclerView =findViewById(R.id.GeneralInformation);
+        commands = new ArrayList<>();
 
         ArrayList<models.GeneralInformation> arrayList = new ArrayList<>();
         generalInformationAdapter = new GeneralInformationAdapter(this, arrayList);
@@ -40,6 +46,16 @@ public class GeneralInformationActivity extends AppCompatActivity {
 
                 if (!ObdService.isReadingRealData)
                     generalInformationAdapter.replaceAll(intent.<models.GeneralInformation>getParcelableArrayListExtra("data"));
+
+                else {
+                    if (currentWorkingIndex != -1) {
+
+                        GeneralInformation item = generalInformationAdapter.getGeneralInformationArrayList().get(currentWorkingIndex);
+                        item.setUsedValue(
+                                (Float) commands.get(currentWorkingIndex).performCalculations(intent.getStringExtra("data").getBytes()));
+                        generalInformationAdapter.notifyItemChanged(currentWorkingIndex);
+                    }
+                }
             }
         });
 
@@ -53,6 +69,30 @@ public class GeneralInformationActivity extends AppCompatActivity {
                     generalInformationAdapter.modifyItems();
                 }
             }, 1000);
+
+        else {
+            /** NEW COMMANDS ADDING */
+
+            generalInformationAdapter.add(new GeneralInformation(0, "Speed", new ArrayList<Float>()));
+            commands.add(new BaseObdCommand<Integer>(this, "*Command here*") {
+                @Override
+                public String getName() {
+                    return "speed";
+                }
+
+                @Override
+                public Integer performCalculations(byte[] bytes) {
+                    return null;
+                }
+            });
+
+            /** END */
+
+            CommandThread thread = new CommandThread();
+            thread.start();
+
+        }
+
     }
 
     @Override
@@ -71,6 +111,21 @@ public class GeneralInformationActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+    }
+
+    public class CommandThread extends Thread {
+
+        @Override
+        public void run() {
+            super.run();
+            Intent intent = new Intent(GeneralInformationActivity.this, ObdService.class);
+            for (int i = 0; i < commands.size(); i++) {
+                synchronized (GeneralInformationActivity.this) {
+                    currentWorkingIndex = i;
+                    commands.get(i).sendCommand();
+                }
+            }
+        }
     }
 
 }

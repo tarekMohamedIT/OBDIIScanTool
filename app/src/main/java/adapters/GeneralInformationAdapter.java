@@ -12,6 +12,7 @@ import com.r3tr0.obdiiscantool.R;
 
 import java.util.ArrayList;
 
+import communications.ObdService;
 import models.GeneralInformation;
 
 /**
@@ -25,7 +26,6 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
 
 
     private Context context;
-
     private ArrayList<GeneralInformation> generalInformationArrayList;
 
     public GeneralInformationAdapter(Context context, ArrayList<GeneralInformation> generalInformationArrayList) {
@@ -48,6 +48,15 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
         notifyDataSetChanged();
     }
 
+    public void modifyItemAt(int position, GeneralInformation newItem) {
+        this.generalInformationArrayList.set(position, newItem);
+        notifyItemChanged(position);
+    }
+
+    public ArrayList<GeneralInformation> getGeneralInformationArrayList() {
+        return generalInformationArrayList;
+    }
+
     @Override
     public GeneralInformationViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -58,12 +67,20 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
     public void onBindViewHolder(GeneralInformationViewHolder holder, int position) {
         final GeneralInformationViewHolder tmp = holder;
 
-        holder.headlineTextView.setText(generalInformationArrayList.get(position).getHeadline());
-        holder.gauge.setCurrentProgress(0);
-        holder.gauge.setTotalProgress(generalInformationArrayList.get(position).getMaxValue());
-        float val = generalInformationArrayList.get(position).generateValue();
-        holder.gauge.setCurrentProgress(val);
-        holder.valueTextView.setText(String.format("%s/%s", val, generalInformationArrayList.get(position).getMaxValue()));
+        if (!ObdService.isReadingRealData) {
+            holder.headlineTextView.setText(generalInformationArrayList.get(position).getHeadline());
+            holder.gauge.setCurrentProgress(0);
+            holder.gauge.setTotalProgress(generalInformationArrayList.get(position).getMaxValue());
+            float val = generalInformationArrayList.get(position).generateValue();
+            holder.gauge.setCurrentProgress(val);
+            holder.valueTextView.setText(String.format("%s/%s", val, generalInformationArrayList.get(position).getMaxValue()));
+        } else {
+            holder.headlineTextView.setText(generalInformationArrayList.get(position).getHeadline());
+            holder.gauge.setCurrentProgress(0);
+            holder.gauge.setTotalProgress(generalInformationArrayList.get(position).getUsedValue());
+            holder.gauge.setCurrentProgress(generalInformationArrayList.get(position).getUsedValue());
+            holder.valueTextView.setText(String.format("%s", generalInformationArrayList.get(position).getUsedValue()));
+        }
     }
 
     @Override

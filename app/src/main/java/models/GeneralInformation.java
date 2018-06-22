@@ -27,7 +27,7 @@ public class GeneralInformation implements Parcelable {
     private String headline;
     private List<Float> values;
     private float maxValue;
-    private int usedValue;
+    private float usedValue;
 
     public GeneralInformation(int type, String headline, List<Float> values) {
         this.type = type;
@@ -86,8 +86,12 @@ public class GeneralInformation implements Parcelable {
                 this.maxValue = number;
     }
 
-    public int getUsedValue() {
+    public float getUsedValue() {
         return usedValue;
+    }
+
+    public void setUsedValue(float usedValue) {
+        this.usedValue = usedValue;
     }
 
     public float generateValue() {
@@ -111,7 +115,7 @@ public class GeneralInformation implements Parcelable {
         parcel.writeInt(type);
         parcel.writeString(headline);
         parcel.writeFloat(maxValue);
-        parcel.writeInt(usedValue);
+        parcel.writeFloat(usedValue);
         parcel.writeList(values);
     }
 }

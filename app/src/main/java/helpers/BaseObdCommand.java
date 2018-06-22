@@ -7,7 +7,6 @@ import communications.ObdService;
 import enums.ServiceCommand;
 
 public abstract class BaseObdCommand<output> {
-    protected output result;
     String commandString;
     Context context;
 
@@ -16,15 +15,17 @@ public abstract class BaseObdCommand<output> {
         this.commandString = commandString;
     }
 
+    public abstract String getName();
+
+    public abstract output performCalculations(byte[] bytes);
+
     public void sendCommand() {
         Intent intent = new Intent(context, ObdService.class);
         intent.putExtra("cmd", ServiceCommand.write);
         intent.putExtra("data", commandString);
     }
 
-    abstract void performCalculations(byte[] bytes);
-
-    public output getResult() {
-        return result;
+    public String getCommandString() {
+        return commandString;
     }
 }
