@@ -62,7 +62,7 @@ public class FaultCodes extends AppCompatActivity {
                 String data = intent.getStringExtra("data");
                 Log.e("test", "received something!");
 
-                if (!gotFirstCommand) {// first command
+                if (!gotFirstCommand) {// first command yarab :)
                     Badapter.clear();
                     Badapter.add("Fault codes number : " + commands.get(0).performCalculations(data.getBytes()));
                     gotFirstCommand = true;
