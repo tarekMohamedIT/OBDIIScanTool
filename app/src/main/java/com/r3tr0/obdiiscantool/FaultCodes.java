@@ -1,6 +1,7 @@
 package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -23,6 +24,7 @@ public class FaultCodes extends AppCompatActivity {
     ArrayList arrayList;
     boolean gotFirstCommand = false;
     int currentWorkingIndex;
+    CommandThread thread;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -96,6 +98,22 @@ public class FaultCodes extends AppCompatActivity {
             }
         });
 
+        thread = new CommandThread();
+        thread.start();
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(receiver, new IntentFilter(ObdService.RECEIVER_ACTION));
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
+        thread.stopRunning();
     }
 
     public class CommandThread extends Thread {
