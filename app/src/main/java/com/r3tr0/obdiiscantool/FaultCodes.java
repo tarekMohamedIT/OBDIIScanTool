@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import java.util.ArrayList;
 import adapters.BluetoothAdapter;
 import communications.ObdReceiver;
 import communications.ObdService;
+import enums.ServiceCommand;
 import events.OnBroadcastReceivedListener;
 import helpers.BaseObdCommand;
 
@@ -25,6 +27,7 @@ public class FaultCodes extends AppCompatActivity {
     boolean gotFirstCommand = false;
     int currentWorkingIndex;
     CommandThread thread;
+    BluetoothAdapter Badapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,7 +45,7 @@ public class FaultCodes extends AppCompatActivity {
             arrayList.add("3) Error in fuel injection");
             arrayList.add("4) Brakes not working well");
         }
-        final BluetoothAdapter Badapter = new BluetoothAdapter(this, arrayList);
+        Badapter = new BluetoothAdapter(this, arrayList);
 
         Badapter.setOnItemClickListener(new BluetoothAdapter.OnItemClickListener() {
             @Override
@@ -57,6 +60,7 @@ public class FaultCodes extends AppCompatActivity {
                 Intent intent = (Intent) message;
 
                 String data = intent.getStringExtra("data");
+                Log.e("test", "received something!");
 
                 if (!gotFirstCommand) {// first command yarab :)
                     Badapter.clear();
@@ -76,12 +80,12 @@ public class FaultCodes extends AppCompatActivity {
         commands.add(new BaseObdCommand<Integer>(this, "0101") {
             @Override
             public String getName() {
-                return "faults number";//khkjghkgl
+                return "faults number";
             }
 
             @Override
             public Integer performCalculations(byte[] bytes) {//e3ml el calculation w return el number ka integer
-                return null;
+                return 3;
             }
         });
 
@@ -108,6 +112,9 @@ public class FaultCodes extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver(receiver, new IntentFilter(ObdService.RECEIVER_ACTION));
+        Intent obdIntent = new Intent(this, ObdService.class);
+        obdIntent.putExtra("cmd", ServiceCommand.startReading);
+        startService(obdIntent);
     }
 
     @Override
@@ -115,30 +122,40 @@ public class FaultCodes extends AppCompatActivity {
         super.onPause();
         unregisterReceiver(receiver);
         thread.stopRunning();
+        Intent obdIntent = new Intent(this, ObdService.class);
+        obdIntent.putExtra("cmd", ServiceCommand.stopReading);
+        startService(obdIntent);
     }
 
     public class CommandThread extends Thread {
 
-        boolean isrunning = true;
+        boolean isRunning = true;
 
         @Override
         public synchronized void start() {
             super.start();
-            isrunning = true;
+            isRunning = true;
         }
 
         public void stopRunning() {
-            isrunning = false;
+            isRunning = false;
         }
 
         @Override
         public void run() {
             super.run();
-
-            while (isrunning) {
+            Log.e("test", "thread started");
+            while (isRunning) {
                 synchronized (FaultCodes.this) {
-                    commands.get(0).sendCommand();
-                    commands.get(1).sendCommand();
+                    try {
+                        commands.get(0).sendCommand();
+                        Thread.sleep(400);
+                        commands.get(1).sendCommand();
+                        Thread.sleep(2000);
+
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
