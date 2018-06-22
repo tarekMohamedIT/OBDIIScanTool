@@ -27,7 +27,7 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etmail ;
     private EditText etPassword ;
     private EditText etNumber ;
-    private Button bt ;
+    private Button bt1 ;
 
 
 
@@ -40,10 +40,10 @@ public class RegisterActivity extends AppCompatActivity {
         setContentView(R.layout.activity_register);
 
         etname =(EditText) findViewById(R.id.etname);
-        etmail =(EditText) findViewById(R.id.etmail);
+        etmail =(EditText) findViewById(R.id.etemail);
         etPassword =(EditText) findViewById(R.id.etpass);
         etNumber =(EditText) findViewById(R.id.etnumber);
-        bt =(Button) findViewById(R.id.bt2);
+        bt1 =(Button) findViewById(R.id.bt2);
 
 
         etname.addTextChangedListener(loginTextwatcher);
@@ -83,8 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
                 final String pass =etPassword.getText().toString();
                 final String number=etNumber.getText().toString();
 
-                //final String email = etmail.getText().toString();
-                //final String password = etPassword.getText().toString();
+
                 mAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(Task<AuthResult> task) {
@@ -138,7 +137,7 @@ public class RegisterActivity extends AppCompatActivity {
             String number=etNumber.getText().toString().trim();
 
 
-            bt.setEnabled(!username.isEmpty()&&!email.isEmpty()&&!pass.isEmpty()&&!number.isEmpty());
+            bt1.setEnabled(!username.isEmpty()&&!email.isEmpty()&&!pass.isEmpty()&&!number.isEmpty());
 
 
         }

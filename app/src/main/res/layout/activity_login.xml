@@ -37,12 +37,10 @@
         android:text="Login" />
 
     <TextView
-        android:id="@+id/regHere"
-        android:layout_width="wrap_content"
+        android:id="@+id/etText"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:text="SIGNUP"
-        tools:layout_editor_absoluteX="560dp"
-        tools:layout_editor_absoluteY="83dp" />
+        android:layout_marginLeft="180dp"
+        android:text="Sign up" />
 
 </LinearLayout>
