@@ -76,7 +76,7 @@ public class FaultCodes extends AppCompatActivity {
         commands.add(new BaseObdCommand<Integer>(this, "0101") {
             @Override
             public String getName() {
-                return "faults number";
+                return "faults number";//khkjghkgl
             }
 
             @Override
