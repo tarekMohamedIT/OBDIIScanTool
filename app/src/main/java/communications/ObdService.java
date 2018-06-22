@@ -23,15 +23,18 @@ import java.util.UUID;
 
 import enums.ServiceCommand;
 import enums.ServiceFlag;
+import models.FaultCode;
 import models.GeneralInformation;
 
 public class ObdService extends Service {
     boolean isReadingRealData;
     boolean dataVerified;
-    String jsonData;
+
+    String jsonGeneralData;
+    String jsonFaultCodes;
 
     public static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
-    public static final String RECEIVER_ACTION = "com.r3tr0.bluetoothterminal.communications.OBD";
+    public static final String RECEIVER_ACTION = "com.r3tr0.OBDIIScanTool.communications.OBD";
 
     private Intent intent1;
     private BluetoothServerSocket serverSocket;
@@ -50,14 +53,16 @@ public class ObdService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         ServiceCommand command = (ServiceCommand) intent.getSerializableExtra("cmd");
 
+        if (intent1 == null)
+            intent1 = new Intent(RECEIVER_ACTION);
         Log.e("Service", "Started with command : " + command);
 
         if (command == ServiceCommand.initializeJson) {
             isReadingRealData = false;
-            initializeJson(intent.getStringExtra("json"));
+            initializeJson(intent.getStringExtra("general"), intent.getStringExtra("faults"));
             this.flag = ServiceFlag.readingJson;
         } else if (command == ServiceCommand.initializeBluetooth) {
-            jsonData = null;
+            jsonGeneralData = null;
             this.flag = ServiceFlag.disconnected;
             initializeBluetooth((BluetoothDevice) intent.getParcelableExtra("device"));
             isReadingRealData = true;
@@ -118,7 +123,7 @@ public class ObdService extends Service {
     private ArrayList<GeneralInformation> getAllGeneralInformationItems() {
         ArrayList<GeneralInformation> generalInformations = new ArrayList<>();
         try {
-            JSONArray array = new JSONObject(jsonData).getJSONArray("car1");
+            JSONArray array = new JSONObject(jsonGeneralData).getJSONArray("car1");
             for (int j = 0; j < array.length(); j += 8) {
                 for (int i = 0; i < 8; i++) {
                     JSONObject gaugeObject = array.getJSONObject(i + j);
@@ -134,6 +139,26 @@ public class ObdService extends Service {
         }
 
         return generalInformations;
+    }
+
+    private ArrayList<FaultCode> getAllFaultCodeItems() {
+        ArrayList<FaultCode> faultCodes = new ArrayList<>();
+        try {
+            JSONArray array = new JSONObject(jsonFaultCodes).getJSONArray("Hyundai");
+            for (int i = 0; i < array.length(); i++) {
+                JSONObject faultCodeObject = array.getJSONObject(i);
+                faultCodes.add(new FaultCode(
+                        faultCodeObject.getString("name")
+                        , faultCodeObject.getString("Descrption")
+                        , faultCodeObject.getString("ID")));
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return faultCodes;
     }
 
     public void initializeBluetooth(BluetoothDevice device) {
@@ -179,12 +204,67 @@ public class ObdService extends Service {
             sendBroadcast(intent1);
             intent1.removeExtra("status");
             bluetoothSocket = null;
+            return;
         }
 
+        if (jsonFaultCodes != null)
+            jsonFaultCodes = null;
+
+        if (jsonGeneralData != null)
+            jsonGeneralData = null;
     }
 
-    public void initializeJson(String jsonData) {
-        this.jsonData = jsonData;
+    public void initializeJson(String jsonGeneralData, String jsonFaultCodes) {
+
+        try {
+            this.jsonGeneralData = jsonGeneralData;
+            getAllGeneralInformationItems();
+        } catch (RuntimeException e) {
+            this.flag = ServiceFlag.invalidGeneralInformation;
+            intent1.putExtra("status", flag);
+            sendBroadcast(intent1);
+            intent1.removeExtra("status");
+            return;
+        }
+
+        try {
+            this.jsonFaultCodes = jsonFaultCodes;
+            getAllFaultCodeItems();
+        } catch (RuntimeException e) {
+            this.flag = ServiceFlag.invalidFaultCodes;
+            intent1.putExtra("status", flag);
+            sendBroadcast(intent1);
+            intent1.removeExtra("status");
+            return;
+        }
+
+        if (bluetoothSocket != null) {
+            try {
+                inputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            inputStream = null;
+            try {
+                outputStream.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            outputStream = null;
+            try {
+                bluetoothSocket.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            bluetoothSocket = null;
+        }
+
+
+        this.flag = ServiceFlag.readingJson;
+        intent1.putExtra("status", flag);
+        sendBroadcast(intent1);
+        intent1.removeExtra("status");
     }
 
     public void write(byte[] bytes) throws IOException {
@@ -196,6 +276,9 @@ public class ObdService extends Service {
     public ArrayList readJsonFile(String type) {
         if (type.equals("general"))
             return getAllGeneralInformationItems();
+
+        else if (type.equals("fault"))
+            return getAllFaultCodeItems();
 
         return null;
     }

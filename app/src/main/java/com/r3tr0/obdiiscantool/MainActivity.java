@@ -1,12 +1,13 @@
 package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Button;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -16,15 +17,20 @@ import java.io.IOException;
 import java.util.ArrayList;
 
 import adapters.RecyclerListAdapter;
+import communications.ObdReceiver;
 import communications.ObdService;
 import dialogs.MethodSelectionDialog;
+import enums.RecyclerListAdapterMode;
+import enums.ServiceCommand;
+import enums.ServiceFlag;
+import events.OnBroadcastReceivedListener;
 import events.OnItemClickListener;
 
 public class MainActivity extends AppCompatActivity {
 
     RecyclerListAdapter adapter;
     RecyclerView recyclerView;
-    Button refreshButton;
+    ObdReceiver receiver;
     Intent obdIntent;
 
     MethodSelectionDialog dialog;
@@ -33,22 +39,35 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         obdIntent = new Intent(this, ObdService.class);
+        receiver = new ObdReceiver(new OnBroadcastReceivedListener() {
+            @Override
+            public void onBroadcastReceived(Object message) {
+                Intent intent = (Intent) message;
+
+                String status = ((ServiceFlag) intent.getSerializableExtra("status")).name();
+
+                if (status != null) {
+                    adapter.changeSubTitle(0, status);
+                }
+            }
+        });
 
         ArrayList<RecyclerListAdapter.ListItem> listItems = new ArrayList<>();
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_FULL, R.drawable.bluetoothvector, 21));
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_change_input, 21));
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_generalinfo,21));
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_faultcodes,21));
-        listItems.add(new RecyclerListAdapter.ListItem(RecyclerListAdapter.MODE_PART, R.drawable.ic_recordatrip,21));
-
+        listItems.add(new RecyclerListAdapter.ListItem("Bluetooth", "Not connected", RecyclerListAdapterMode.fullWithTitleAndSubTitleMode, R.drawable.btnew, Color.parseColor("#ff22569f")));
+        listItems.add(new RecyclerListAdapter.ListItem("change input", "", RecyclerListAdapterMode.partMode, R.drawable.ic_change_input));
+        listItems.add(new RecyclerListAdapter.ListItem("general info", "", RecyclerListAdapterMode.partMode, R.drawable.ic_generalinfo));
+        listItems.add(new RecyclerListAdapter.ListItem("fault codes", "", RecyclerListAdapterMode.partMode, R.drawable.ic_faultcodes));
+        listItems.add(new RecyclerListAdapter.ListItem("record trips", "", RecyclerListAdapterMode.partMode, R.drawable.ic_recordatrip));
         adapter = new RecyclerListAdapter(this, listItems);
+
         adapter.setOnItemClickListener(new OnItemClickListener() {
             @Override
             public void onClick(int position) {
                 switch (position){
                     case 0 :
-                        if (adapter.getItem(position).getResImageID() == R.drawable.bluetoothvector)
+                        if (adapter.getItem(position).getResImageID() == R.drawable.btnew)
                             startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
                         else {
@@ -64,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this, GeneralInformationActivity.class));
                         break;
                     case 3:
-                        startActivity(new Intent(MainActivity.this, FaultCodes.class));
+                        startActivity(new Intent(MainActivity.this, FaultCodesActivity.class));
                         break;
                     case 4:
                         startActivity(new Intent(MainActivity.this, TripActivity.class));
@@ -76,10 +95,15 @@ public class MainActivity extends AppCompatActivity {
         dialog = new MethodSelectionDialog(MainActivity.this, new OnItemClickListener() {
             @Override
             public void onClick(int position) {
-                if (position == 0)
-                    adapter.changeImage(0, R.drawable.jsonvector);
-                else
-                    adapter.changeImage(0, R.drawable.bluetoothvector);
+                if (position == 0) {
+                    adapter.changeImage(0, R.drawable.jsonew);
+                    adapter.changeColor(0, Color.parseColor("#ff634016"));
+                    adapter.changeTitle(0, "Json files");
+                } else {
+                    adapter.changeImage(0, R.drawable.btnew);
+                    adapter.changeColor(0, Color.parseColor("#ff22569f"));
+                    adapter.changeTitle(0, "Bluetooth");
+                }
 
                 dialog.dismiss();
             }
@@ -92,8 +116,10 @@ public class MainActivity extends AppCompatActivity {
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
             public int getSpanSize(int position) {
-                if (adapter.getItemViewType(position) == RecyclerListAdapter.MODE_FULL)
+                if (adapter.getItemViewType(position) == RecyclerListAdapterMode.fullMode.getValue()
+                        || adapter.getItemViewType(position) == RecyclerListAdapterMode.fullWithTitleAndSubTitleMode.getValue())
                     return 2;
+
                 else return 1;
             }
         });
@@ -130,6 +156,22 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return null;
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(receiver, new IntentFilter(ObdService.RECEIVER_ACTION));
+
+        obdIntent.putExtra("cmd", ServiceCommand.getStatus);
+        startService(obdIntent);
+        obdIntent.removeExtra("cmd");
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(receiver);
     }
 
     @Override
