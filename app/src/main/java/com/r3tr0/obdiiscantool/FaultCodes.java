@@ -92,7 +92,7 @@ public class FaultCodes extends AppCompatActivity {
         commands.add(new BaseObdCommand(this, "03") {
             @Override
             public String getName() {
-                return "faults";
+                return "faults";//bla
             }
 
             @Override
