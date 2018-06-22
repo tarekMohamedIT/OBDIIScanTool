@@ -94,6 +94,7 @@ public class FaultCodes extends AppCompatActivity {
             @Override
             public Object performCalculations(byte[] bytes) {//hena return null bas kol error e3mlo add fel adapter
                 //Badapter.add("hena el error b3d ma t3mlo translate");
+                //int number = Integer.parseInt(bytes[0] + "" + bytes[1], 16);
                 return null;
             }
         });
