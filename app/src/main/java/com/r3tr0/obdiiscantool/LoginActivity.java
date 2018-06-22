@@ -21,6 +21,7 @@ public class LoginActivity extends AppCompatActivity {
     private EditText Password;
     private EditText mail;
     private Button bt2;
+    private TextView RegisterLink;
 
     private FirebaseAuth mAuth ;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
@@ -33,7 +34,8 @@ public class LoginActivity extends AppCompatActivity {
         Password=(EditText) findViewById(R.id.etPass2);
         mail=(EditText) findViewById(R.id.etmail);
         bt2 =(Button) findViewById(R.id.bt2);
-        final TextView RegisterLink =(TextView) findViewById(R.id.regHere);
+
+         RegisterLink =(TextView) findViewById(R.id.etText);
         Password.addTextChangedListener(LTextWatcher);
         mail.addTextChangedListener(LTextWatcher);
 
@@ -58,6 +60,19 @@ public class LoginActivity extends AppCompatActivity {
 
             }
         };
+
+
+        RegisterLink.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
+                LoginActivity.this.startActivity(registerIntent);
+
+
+            }
+        });
+
 
 
         bt2.setOnClickListener(new View.OnClickListener() {
@@ -90,16 +105,6 @@ public class LoginActivity extends AppCompatActivity {
         });
 
 
-        RegisterLink.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
-                LoginActivity.this.startActivity(registerIntent);
-
-
-            }
-        });
 
 
 

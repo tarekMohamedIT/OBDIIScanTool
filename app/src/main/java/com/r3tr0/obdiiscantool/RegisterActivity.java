@@ -39,11 +39,11 @@ public class RegisterActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        etname =(EditText) findViewById(R.id.etName);
-        etmail =(EditText) findViewById(R.id.etmail);
-        etPassword =(EditText) findViewById(R.id.etpassword);
+        etname =(EditText) findViewById(R.id.etname);
+        etmail =(EditText) findViewById(R.id.etemail);
+        etPassword =(EditText) findViewById(R.id.etpass);
         etNumber =(EditText) findViewById(R.id.etnumber);
-        bt1 =(Button) findViewById(R.id.bt1);
+        bt1 =(Button) findViewById(R.id.bt2);
 
 
         etname.addTextChangedListener(loginTextwatcher);
@@ -83,8 +83,7 @@ public class RegisterActivity extends AppCompatActivity {
                 final String pass =etPassword.getText().toString();
                 final String number=etNumber.getText().toString();
 
-                //final String email = etmail.getText().toString();
-                //final String password = etPassword.getText().toString();
+
                 mAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(Task<AuthResult> task) {
