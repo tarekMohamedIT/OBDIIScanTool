@@ -19,7 +19,7 @@ public class FaultCodes extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fault_codes);
-        RecyclerView recyclerView = findViewById(R.id.devicesRecyclerView);
+       // RecyclerView recyclerView =findViewById(R.id.faultcodes);
         ArrayList arrayList =new ArrayList<String>();
         arrayList.add("1) Suspension problem");
         arrayList.add("2) Error in fuel injection");
@@ -34,8 +34,8 @@ public class FaultCodes extends AppCompatActivity {
             }
         });
 
-        recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
-        recyclerView.setAdapter(Badapter);
+      //  recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
+       // recyclerView.setAdapter(Badapter);
     }
 
 
