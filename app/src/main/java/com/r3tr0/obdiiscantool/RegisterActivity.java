@@ -1,5 +1,6 @@
 package com.r3tr0.obdiiscantool;
 
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -13,6 +14,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
@@ -26,6 +28,8 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etPassword ;
     private EditText etNumber ;
     private Button bt1 ;
+
+
 
     private FirebaseAuth mAuth ;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
@@ -48,6 +52,74 @@ public class RegisterActivity extends AppCompatActivity {
         etPassword.addTextChangedListener(loginTextwatcher);
 
 
+        mAuth=FirebaseAuth.getInstance();
+        firebaseAuthStateListener=new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                if(user != null)
+                {
+                    Intent intent = new Intent(RegisterActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+
+                }
+
+
+            }
+        };
+
+
+
+        bt1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                final String username = etname.getText().toString();
+                final String email =etmail.getText().toString();
+                final String pass =etPassword.getText().toString();
+                final String number=etNumber.getText().toString();
+
+                //final String email = etmail.getText().toString();
+                //final String password = etPassword.getText().toString();
+                mAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(Task<AuthResult> task) {
+
+                        if(!task.isSuccessful())
+
+                        {
+
+                            Toast.makeText(RegisterActivity.this,"sign up error",Toast.LENGTH_LONG).show();
+
+                        }else
+                        {
+                            String user_id = mAuth.getCurrentUser().getUid();
+                            DatabaseReference current_user_id = FirebaseDatabase.getInstance().getReference().child("Users").child(user_id);
+
+                            Map map = new HashMap();
+
+                            map.put("Name",username);
+                            map.put("Email",email);
+                            map.put("Phone",number);
+
+                            current_user_id.setValue(map);
+
+
+                        }
+
+
+                    }
+                });
+
+            }
+        });
+
+
+
 
     }
 
@@ -68,43 +140,6 @@ public class RegisterActivity extends AppCompatActivity {
 
             bt1.setEnabled(!username.isEmpty()&&!email.isEmpty()&&!pass.isEmpty()&&!number.isEmpty());
 
-            bt1.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    final String email = etmail.getText().toString();
-                    final String password = etPassword.getText().toString();
-                    mAuth.createUserWithEmailAndPassword(email,password).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
-                        @Override
-                        public void onComplete(Task<AuthResult> task) {
-
-                            if(!task.isSuccessful())
-
-                            {
-
-                                Toast.makeText(RegisterActivity.this,"sign up error",Toast.LENGTH_LONG).show();
-
-                            }else
-                            {
-                                String user_id = mAuth.getCurrentUser().getUid();
-                                DatabaseReference current_user_id = FirebaseDatabase.getInstance().getReference().child("Users").child(user_id);
-
-                                Map map = new HashMap();
-
-                                map.put("Name",username);
-                                map.put("Email",etmail);
-                                map.put("Phone",etNumber);
-
-                                current_user_id.setValue(map);
-
-
-                            }
-
-
-                        }
-                    });
-
-                }
-            });
 
         }
 

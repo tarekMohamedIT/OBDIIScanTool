@@ -520,8 +520,8 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
 
       //  final String[] tripCounter = new String[1];
 
-        //String userId= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        final DatabaseReference userRef= FirebaseDatabase.getInstance().getReference("Users").child("Ssf0vJFPNiMiU5snCmhkJfMzZna2").child("Trip");
+        String userId= FirebaseAuth.getInstance().getCurrentUser().getUid();
+        final DatabaseReference userRef= FirebaseDatabase.getInstance().getReference("Users").child(userId).child("Trip");
 
 
         userRef.addValueEventListener(new ValueEventListener() {
@@ -535,10 +535,10 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
 
                    Map map = new HashMap();
 
-                   map.put("Source", myLocationAddressName);
-                   map.put("Destination", myDestinationAddressName);
-                   map.put("Distance", mDistanceToDestination);
-                   map.put("Duration", mDurationOfTrip);
+                   map.put("1-Source", myLocationAddressName);
+                   map.put("2-Destination", myDestinationAddressName);
+                   map.put("3-Distance", mDistanceToDestination);
+                   map.put("4-Duration", mDurationOfTrip);
 
                    ref2.setValue(map);
 
@@ -550,12 +550,13 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
 
                            ref2=userRef.child(String.valueOf(TripCounter));
                            Map map = new HashMap();
-                           map.put("Source", myLocationAddressName);
-                           map.put("Destination", myDestinationAddressName);
-                           map.put("Distance", mDistanceToDestination);
-                           map.put("Duration", mDurationOfTrip);
 
-                           ref2.setValue(map);
+                   map.put("1-Source", myLocationAddressName);
+                   map.put("2-Destination", myDestinationAddressName);
+                   map.put("3-Distance", mDistanceToDestination);
+                   map.put("4-Duration", mDurationOfTrip);
+
+                   ref2.setValue(map);
 
                            clicked=false ;
 
