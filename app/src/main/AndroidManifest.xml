@@ -47,6 +47,7 @@
                 android:value=".MainActivity" />
         </activity>
         <activity android:name=".TripEndActivity" />
+        <activity android:name=".LoginActivity" />
 
         <service
             android:name="communications.ObdService"

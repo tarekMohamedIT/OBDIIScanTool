@@ -25,6 +25,7 @@ public class GeneralInformationActivity extends AppCompatActivity {
     GeneralInformationAdapter generalInformationAdapter;
     ObdReceiver receiver;
     ServiceFlag flag;
+    CommandThread thread;
 
     ArrayList<BaseObdCommand> commands;
     int currentWorkingIndex = -1;
@@ -33,7 +34,7 @@ public class GeneralInformationActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_general_information);
-        RecyclerView recyclerView =findViewById(R.id.GeneralInformation);
+        RecyclerView recyclerView = findViewById(R.id.GeneralInformation);
         commands = new ArrayList<>();
 
         ArrayList<models.GeneralInformation> arrayList = new ArrayList<>();
@@ -88,9 +89,8 @@ public class GeneralInformationActivity extends AppCompatActivity {
 
             /** END */
 
-            CommandThread thread = new CommandThread();
+            thread = new CommandThread();
             thread.start();
-
         }
 
     }
@@ -111,18 +111,34 @@ public class GeneralInformationActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
+        if (thread != null && thread.isrunning)
+            thread.stopRunning();
     }
 
     public class CommandThread extends Thread {
 
+        boolean isrunning = true;
+
+        @Override
+        public synchronized void start() {
+            super.start();
+            isrunning = true;
+        }
+
+        public void stopRunning() {
+            isrunning = false;
+        }
+
         @Override
         public void run() {
             super.run();
-            Intent intent = new Intent(GeneralInformationActivity.this, ObdService.class);
-            for (int i = 0; i < commands.size(); i++) {
-                synchronized (GeneralInformationActivity.this) {
-                    currentWorkingIndex = i;
-                    commands.get(i).sendCommand();
+
+            while (isrunning) {
+                for (int i = 0; i < commands.size(); i++) {
+                    synchronized (GeneralInformationActivity.this) {
+                        currentWorkingIndex = i;
+                        commands.get(i).sendCommand();
+                    }
                 }
             }
         }
