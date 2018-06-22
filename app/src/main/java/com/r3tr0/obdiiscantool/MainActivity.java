@@ -25,6 +25,7 @@ import enums.ServiceCommand;
 import enums.ServiceFlag;
 import events.OnBroadcastReceivedListener;
 import events.OnItemClickListener;
+import models.FaultCode;
 
 public class MainActivity extends AppCompatActivity {
 
