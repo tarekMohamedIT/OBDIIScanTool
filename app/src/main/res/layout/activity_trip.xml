@@ -1,36 +1,115 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="com.r3tr0.obdiiscantool.TripActivity">
-    tools:context="com.r3tr0.obdiiscantool.FaultCodesActivity"
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="From : Someplace"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+    android:layout_height="match_parent">
 
-    <TextView
+    <fragment xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:map="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/map"
+        android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:text="To : Someplace else"
-        android:textAppearance="@style/TextAppearance.AppCompat.Headline" />
+        android:layout_height="match_parent"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        tools:context=".TripActivity"
+        android:layout_alignParentLeft="true"
+        tools:ignore="RtlCompat" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:background="@drawable/white_border"
+        android:gravity="bottom"
+        android:visibility="gone"
+        tools:ignore="RtlCompat">
+
+
+    </LinearLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@drawable/white_border"
+        android:id="@+id/relLayout1">
+
+
+
+        <fragment
+            android:id="@+id/place_autocomplete_fragment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:name="com.google.android.gms.location.places.ui.PlaceAutocompleteFragment"
+            android:layout_centerVertical="true"
+            android:textSize="15sp"
+            android:textColor="#000"
+            android:background="@null"
+            android:hint="Enter Address or City"
+            android:imeOptions="actionSearch"
+
+            />
+
+
+
+    </RelativeLayout>
 
     <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:srcCompat="@drawable/map_test" />
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_below="@id/relLayout1"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:scaleType="centerCrop"
+        android:id="@+id/ic_gps"
+        android:src="@drawable/ic_gps"
+        />
 
     <Button
-        android:id="@+id/endButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:onClick="onClick"
-        android:text="Start" />
+        android:id="@+id/StartTrip"
+        android:layout_width="211dp"
+        android:layout_height="33dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="13dp"
+        android:background="#e3e3e3"
+        android:text="Start Trip"
+        android:textAllCaps="false"
+        android:textColor="#ff85ae"
+        android:textSize="20dp" />
 
-</LinearLayout>
+    <Button
+        android:id="@+id/EndTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignStart="@+id/StartTrip"
+        android:layout_alignTop="@+id/StartTrip"
+        android:background="#e3e3e3"
+        android:text="End Trip"
+        android:textAllCaps="false"
+        android:textColor="#ff85ae"
+        android:textSize="15dp"
+        android:visibility="gone"
+        android:layout_alignLeft="@+id/LeftTrip"
+        tools:ignore="RtlCompat,UnknownId" />
+
+    <Button
+        android:id="@+id/CancelTrip"
+        android:layout_width="wrap_content"
+        android:layout_height="33dp"
+        android:layout_alignEnd="@+id/StartTrip"
+        android:layout_alignTop="@+id/StartTrip"
+        android:background="#e3e3e3"
+        android:text="Cancel Trip"
+        android:textAllCaps="false"
+        android:textColor="#ff85ae"
+        android:textSize="15dp"
+        android:visibility="gone"
+        tools:ignore="RtlCompat,UnknownId" />
+
+</RelativeLayout>
