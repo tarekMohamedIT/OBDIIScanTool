@@ -27,7 +27,7 @@ import models.FaultCode;
 import models.GeneralInformation;
 
 public class ObdService extends Service {
-    boolean isReadingRealData;
+    public static boolean isReadingRealData;
     boolean dataVerified;
 
     String jsonGeneralData;
