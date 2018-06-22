@@ -9,11 +9,22 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText Password;
     private EditText mail;
     private Button bt2;
+
+    private FirebaseAuth mAuth ;
+    private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -25,6 +36,59 @@ public class LoginActivity extends AppCompatActivity {
         final TextView RegisterLink =(TextView) findViewById(R.id.regHere);
         Password.addTextChangedListener(LTextWatcher);
         mail.addTextChangedListener(LTextWatcher);
+
+
+
+        mAuth=FirebaseAuth.getInstance();
+        firebaseAuthStateListener=new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
+
+                FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
+
+                if(user != null)
+                {
+                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                    startActivity(intent);
+                    finish();
+                    return;
+
+                }
+
+
+            }
+        };
+
+
+        bt2.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final String email = mail.getText().toString();
+                final String password = Password.getText().toString();
+                mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                    @Override
+                    public void onComplete(Task<AuthResult> task) {
+
+                        if(!task.isSuccessful())
+
+                        {
+
+                            Toast.makeText(LoginActivity.this,"sign in error",Toast.LENGTH_LONG).show();
+
+                        }else
+                        {
+
+                            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                            return;
+                        }
+
+                    }
+                });
+            }
+        });
+
 
         RegisterLink.setOnClickListener(new View.OnClickListener() {
             @Override

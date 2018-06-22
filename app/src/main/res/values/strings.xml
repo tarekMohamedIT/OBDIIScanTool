@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">OBDII Scan Tool</string>
+    <string name="title_activity_trip">Map</string>
+</resources>
