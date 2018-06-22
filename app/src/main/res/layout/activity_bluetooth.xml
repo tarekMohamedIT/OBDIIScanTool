@@ -4,7 +4,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.r3tr0.obdiiscantool.BluetoothActivity">
+    tools:context="com.r3tr0.obdiiscantool.BluetoothActivity"
+    android:background="@drawable/background">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/bluetoothRecyclerView"

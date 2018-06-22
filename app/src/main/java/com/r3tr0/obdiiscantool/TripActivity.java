@@ -147,8 +147,8 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
 
                     getRouteToMarker(mDestinationLatLng);
                     //mStart.setVisibility(View.GONE);
-                    mEnd.setVisibility(View.VISIBLE);
-                    mCancel.setVisibility(View.GONE);
+                    //mEnd.setVisibility(View.VISIBLE);
+                    //mCancel.setVisibility(View.GONE);
 
                     //detectEndtrip detectEndtrip1 = new detectEndtrip();
 
@@ -164,9 +164,9 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
             public void onClick(View v) {
                 erasePolyLines();
                 mDestinationLatLng=null ;
-                mStart.setVisibility(View.VISIBLE);
-                mEnd.setVisibility(View.GONE);
-                mCancel.setVisibility(View.GONE);
+                //mStart.setVisibility(View.VISIBLE);
+                //mEnd.setVisibility(View.GONE);
+                //mCancel.setVisibility(View.GONE);
 
             }
         });
