@@ -85,7 +85,9 @@ public class FaultCodes extends AppCompatActivity {
 
             @Override
             public Integer performCalculations(byte[] bytes) {//e3ml el calculation w return el number ka integer
-                return 3;
+                int number = Integer.parseInt(bytes[4] + "" + bytes[5], 16);
+
+                return number;
             }
         });
 
