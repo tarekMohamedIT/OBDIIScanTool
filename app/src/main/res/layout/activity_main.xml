@@ -5,7 +5,10 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="10"
-    tools:context="com.r3tr0.obdiiscantool.MainActivity">
+    android:background="@drawable/abstract_dark_blue_background_hd_mobile_wallpaper"
+    tools:context="com.r3tr0.obdiiscantool.MainActivity"
+
+    >
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/devicesRecyclerView"

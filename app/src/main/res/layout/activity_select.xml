@@ -3,6 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/background"
     android:orientation="vertical"
     tools:context="com.r3tr0.obdiiscantool.SelectJsonActivity">
 
@@ -59,10 +60,10 @@
 
     <Button
         android:id="@+id/acceptButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="130dp"
+        android:layout_height="70dp"
         android:layout_gravity="center_horizontal"
-        android:background="@android:color/holo_green_dark"
+        android:background="@drawable/b2"
         android:paddingLeft="25dp"
         android:paddingRight="25dp"
         android:text="accept" />

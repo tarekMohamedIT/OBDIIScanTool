@@ -13,18 +13,18 @@ public class RegisterActivity extends AppCompatActivity {
     private EditText etmail ;
     private EditText etPassword ;
     private EditText etNumber ;
-    private Button bt1 ;
+    private Button bt ;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_register);
 
-        etname =(EditText) findViewById(R.id.etName);
+        etname =(EditText) findViewById(R.id.etname);
         etmail =(EditText) findViewById(R.id.etmail);
-        etPassword =(EditText) findViewById(R.id.etpassword);
+        etPassword =(EditText) findViewById(R.id.etpass);
         etNumber =(EditText) findViewById(R.id.etnumber);
-        bt1 =(Button) findViewById(R.id.bt1);
+        bt =(Button) findViewById(R.id.bt2);
 
 
         etname.addTextChangedListener(loginTextwatcher);
@@ -51,7 +51,7 @@ public class RegisterActivity extends AppCompatActivity {
             String number=etNumber.getText().toString().trim();
 
 
-            bt1.setEnabled(!username.isEmpty()&&!email.isEmpty()&&!pass.isEmpty()&&!number.isEmpty());
+            bt.setEnabled(!username.isEmpty()&&!email.isEmpty()&&!pass.isEmpty()&&!number.isEmpty());
 
 
         }
