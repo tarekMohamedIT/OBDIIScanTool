@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
                         startActivity(new Intent(MainActivity.this, GeneralInformationActivity.class));
                         break;
                     case 3:
-                        startActivity(new Intent(MainActivity.this, FaultCodesActivity.class));
+                        startActivity(new Intent(MainActivity.this, FaultCodes.class));
                         break;
                     case 4:
                         startActivity(new Intent(MainActivity.this, TripActivity.class));

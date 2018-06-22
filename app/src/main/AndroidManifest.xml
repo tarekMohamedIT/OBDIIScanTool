@@ -46,10 +46,8 @@
             android:exported="false" />
 
         <activity android:name=".SelectJsonActivity" />
-        <activity android:name=".FaultCodesActivity" />
+        <activity android:name=".FaultCodes" />
         <activity android:name=".LoginActivity">
-
-
 
         </activity>
         <activity android:name=".RegisterActivity"></activity>

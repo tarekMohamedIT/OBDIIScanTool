@@ -8,11 +8,13 @@ import enums.ServiceCommand;
 
 public abstract class BaseObdCommand<output> {
     String commandString;
-    Context context;
+    private final Intent intent;
+    private Context context;
 
     public BaseObdCommand(Context context, String commandString) {
         this.context = context;
         this.commandString = commandString;
+        intent = new Intent(context, ObdService.class);
     }
 
     public abstract String getName();
@@ -20,9 +22,11 @@ public abstract class BaseObdCommand<output> {
     public abstract output performCalculations(byte[] bytes);
 
     public void sendCommand() {
-        Intent intent = new Intent(context, ObdService.class);
-        intent.putExtra("cmd", ServiceCommand.write);
-        intent.putExtra("data", commandString);
+        synchronized (intent) {
+            intent.putExtra("cmd", ServiceCommand.write);
+            intent.putExtra("data", commandString);
+            context.startService(intent);
+        }
     }
 
     public String getCommandString() {
