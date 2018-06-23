@@ -3,7 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.r3tr0.obdiiscantool.GeneralInformationActivity">
+    tools:context="com.r3tr0.obdiiscantool.GeneralInformationActivity"
+    android:background="@drawable/background"
+    >
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/GeneralInformation"

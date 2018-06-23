@@ -29,8 +29,7 @@
             android:id="@+id/txt1"
             android:layout_width="106dp"
             android:layout_height="42dp"
-            android:layout_weight="1"
-            android:text="TextView" />
+            android:layout_weight="1" />
 
     </LinearLayout>
 
@@ -42,7 +41,7 @@
 
         <Button
             android:id="@+id/faultButton"
-            android:layout_width="wrap_content"
+            android:layout_width="140dp"
             android:layout_height="wrap_content"
             android:layout_marginRight="10dp"
             android:background="@android:color/holo_green_dark"
@@ -54,13 +53,12 @@
             android:id="@+id/txt2"
             android:layout_width="106dp"
             android:layout_height="40dp"
-            android:layout_weight="1"
-            android:text="TextView" />
+            android:layout_weight="1" />
     </LinearLayout>
 
     <Button
         android:id="@+id/acceptButton"
-        android:layout_width="130dp"
+        android:layout_width="172dp"
         android:layout_height="70dp"
         android:layout_gravity="center_horizontal"
         android:background="@drawable/b2"

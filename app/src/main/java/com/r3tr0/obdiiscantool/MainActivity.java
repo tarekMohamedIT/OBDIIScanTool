@@ -25,6 +25,7 @@ import enums.ServiceCommand;
 import enums.ServiceFlag;
 import events.OnBroadcastReceivedListener;
 import events.OnItemClickListener;
+import models.GeneralInformation;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -95,6 +96,7 @@ public class MainActivity extends AppCompatActivity {
                     case 5:
                         //startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
                         break;
+
 
                     case 6:
                         finish();

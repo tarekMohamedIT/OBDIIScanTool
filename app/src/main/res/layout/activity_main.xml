@@ -6,6 +6,7 @@
     android:weightSum="10"
     tools:context="com.r3tr0.obdiiscantool.MainActivity"
 
+
     >
 
     <android.support.v7.widget.RecyclerView
