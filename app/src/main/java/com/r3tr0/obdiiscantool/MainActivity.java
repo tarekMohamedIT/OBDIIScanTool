@@ -8,6 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -25,7 +26,6 @@ import enums.ServiceCommand;
 import enums.ServiceFlag;
 import events.OnBroadcastReceivedListener;
 import events.OnItemClickListener;
-import models.GeneralInformation;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     RecyclerView recyclerView;
     ObdReceiver receiver;
     Intent obdIntent;
-
+    ServiceFlag flag;
     MethodSelectionDialog dialog;
 
     @Override
@@ -47,10 +47,10 @@ public class MainActivity extends AppCompatActivity {
             public void onBroadcastReceived(Object message) {
                 Intent intent = (Intent) message;
 
-                String status = ((ServiceFlag) intent.getSerializableExtra("status")).name();
+                flag = ((ServiceFlag) intent.getSerializableExtra("status"));
 
-                if (status != null) {
-                    adapter.changeSubTitle(0, status);
+                if (flag != null) {
+                    adapter.changeSubTitle(0, flag.name());
                 }
             }
         });
@@ -84,10 +84,24 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case 2 :
-                        startActivity(new Intent(MainActivity.this, GeneralInformationActivity.class));
+                        if (flag == ServiceFlag.disconnected
+                                || flag == ServiceFlag.connectionFailed
+                                || flag == ServiceFlag.invalidFaultCodes
+                                || flag == ServiceFlag.invalidGeneralInformation) {
+
+                            Toast.makeText(MainActivity.this, "You must select a valid method", Toast.LENGTH_LONG).show();
+                        } else
+                            startActivity(new Intent(MainActivity.this, GeneralInformationActivity.class));
                         break;
                     case 3:
-                        startActivity(new Intent(MainActivity.this, FaultCodes.class));
+                        if (flag == ServiceFlag.disconnected
+                                || flag == ServiceFlag.connectionFailed
+                                || flag == ServiceFlag.invalidFaultCodes
+                                || flag == ServiceFlag.invalidGeneralInformation) {
+
+                            Toast.makeText(MainActivity.this, "You must select a valid method", Toast.LENGTH_LONG).show();
+                        } else
+                            startActivity(new Intent(MainActivity.this, FaultCodes.class));
                         break;
                     case 4:
                         startActivity(new Intent(MainActivity.this, TripActivity.class));

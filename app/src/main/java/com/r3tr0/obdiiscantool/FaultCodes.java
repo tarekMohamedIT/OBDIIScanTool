@@ -8,9 +8,11 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import adapters.BluetoothAdapter;
 import communications.ObdReceiver;
@@ -34,7 +36,6 @@ public class FaultCodes extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_fault_codes);
-
         RecyclerView recyclerView = findViewById(R.id.faultcodesRecyclerView);
 
 
@@ -60,7 +61,7 @@ public class FaultCodes extends AppCompatActivity {
 
                     if (!gotFirstCommand) {// first command yarab :)
                         Badapter.clear();
-                        Badapter.add("Fault codes number : " + commands.get(0).performCalculations(data.getBytes()));
+                        Badapter.add("Fault codes number : " + commands.get(0).performCalculations(data.replace(ObdService.ELM_NAME, "").getBytes()));
                         gotFirstCommand = true;
                     } else {
                         commands.get(1).performCalculations(data.getBytes());
@@ -89,9 +90,7 @@ public class FaultCodes extends AppCompatActivity {
 
                 @Override
                 public Integer performCalculations(byte[] bytes) {//e3ml el calculation w return el number ka integer
-                    int number = Integer.parseInt(bytes[4] + "" + bytes[5], 16);
-
-                    return number;
+                    return Integer.parseInt(((char) (bytes[4] & 0xff)) + "" + ((char) (bytes[5] & 0xff)), 16);
                 }
             });
 
@@ -105,6 +104,9 @@ public class FaultCodes extends AppCompatActivity {
                 public Object performCalculations(byte[] bytes) {//hena return null bas kol error e3mlo add fel adapter
                     //Badapter.add("hena el error b3d ma t3mlo translate");
                     //int number = Integer.parseInt(bytes[0] + "" + bytes[1], 16);
+
+                    Log.e("test perform ", Arrays.toString(bytes));
+                    Log.e("test perform int", String.valueOf(bytes));
                     return null;
                 }
             });
@@ -117,6 +119,14 @@ public class FaultCodes extends AppCompatActivity {
             obdIntent.putExtra("data", "fault");
             startService(obdIntent);
         }
+
+        Button resetButton = findViewById(R.id.refreshButton);
+        resetButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                thread.start();
+            }
+        });
 
     }
 
@@ -168,6 +178,7 @@ public class FaultCodes extends AppCompatActivity {
                         Thread.sleep(400);
                         commands.get(1).sendCommand();
                         Thread.sleep(2000);
+                        isRunning = false;
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
