@@ -289,6 +289,7 @@ public class ObdService extends Service {
 
     private class ReadingThread extends Thread {
         private volatile boolean isStop = true;
+        private boolean isExtra = false;
 
         @Override
         public synchronized void start() {
@@ -313,25 +314,37 @@ public class ObdService extends Service {
                         }
                         Log.e("Data", c + "");
                         res.append(c);
-                        if (res.toString().matches("TDA[0-9]+\\sV[0-9]+\\.[0-9]+\\s"))
+                        if (res.toString().matches("TDA[0-9]+\\sV[0-9]+\\.[0-9]+\\s")
+                                || res.toString().matches("SEARCHING\\s[.]{3}]")
+                                || res.toString().matches("(BUS INIT)|(BUSINIT)")
+                                || res.toString().equals("?")) {
+                            isExtra = true;
                             break;
+                        }
+
                     }
 
-                    String result = res.toString().replaceAll("SEARCHING\\.+", "");
-                    result = result.replaceAll("\\s", "");
-                    result = result.replaceAll("(BUS INIT)|(BUSINIT)|(\\.)", "");
+                    String result = res.toString().replaceAll("\\s", "");
 
                     if (result.length() > 0) {
                         Log.e("test thread", "read");
-                        intent1.putExtra("data", result);
-                        sendBroadcast(intent1);
-                        intent1.removeExtra("data");
+                        if (isExtra) {
+                            intent1.putExtra("extra", result);
+                            sendBroadcast(intent1);
+                            intent1.removeExtra("extra");
+                        } else {
+                            intent1.putExtra("data", result);
+                            sendBroadcast(intent1);
+                            intent1.removeExtra("data");
+                        }
                     } else {
                         Log.e("test thread", "read");
                         intent1.putExtra("data", "");
                         sendBroadcast(intent1);
                         intent1.removeExtra("data");
                     }
+
+                    isExtra = false;
                     //bytes = inputStream.read(buffer);
                     //tempMsg = new String(buffer,0,bytes);
 
@@ -345,6 +358,4 @@ public class ObdService extends Service {
             this.isStop = false;
         }
     }
-
-
 }
