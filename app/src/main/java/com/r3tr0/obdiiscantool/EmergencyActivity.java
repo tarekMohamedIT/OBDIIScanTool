@@ -22,6 +22,8 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
 
+import communications.EmergencyService;
+
 public class EmergencyActivity extends AppCompatActivity {
 
 
@@ -45,7 +47,7 @@ public class EmergencyActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 String phone=mphone.getText().toString();
-                Intent intent = new Intent("Active");
+                Intent intent = new Intent(EmergencyActivity.this, EmergencyService.class);
                 intent.putExtra("Phone", phone);
                 startService(intent);
             }

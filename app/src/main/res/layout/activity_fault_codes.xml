@@ -1,15 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_height="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    tools:context="com.r3tr0.obdiiscantool.FaultCodesActivity"
-    android:background="@drawable/background"
-    >
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="10"
+    tools:context="com.r3tr0.obdiiscantool.FaultCodesActivity">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/faultcodesRecyclerView"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-</FrameLayout>
+        android:layout_height="0dp"
+        android:layout_weight="9">
+
+    </android.support.v7.widget.RecyclerView>
+
+    <Button
+        android:id="@+id/refreshButton"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="Refresh" />
+</LinearLayout>

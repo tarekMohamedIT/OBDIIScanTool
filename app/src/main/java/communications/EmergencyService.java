@@ -2,9 +2,12 @@ package communications;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.IBinder;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -14,6 +17,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.r3tr0.obdiiscantool.EmergencyActivity;
+import com.r3tr0.obdiiscantool.Manifest;
 
 import java.io.IOException;
 import java.util.List;
@@ -24,7 +28,7 @@ public class EmergencyService extends Service {
     }
 
 
-    private String myLocationAddressName = "" ,sendaddress="";
+    private String myLocationAddressName = "" ,phone;
 
 
     @Override
@@ -34,17 +38,11 @@ public class EmergencyService extends Service {
         //{
 
 
-        if(intent.getAction().equals("Action")) {
 
-            String phone =intent.getStringExtra("phone");
+            phone =intent.getStringExtra("Phone");
 
-            sendaddress=getLocation();
+            getLocation();
 
-
-            sendSMS(phone,sendaddress+"Emergency Situation");
-
-
-        }
         //}
 
 
@@ -57,11 +55,11 @@ public class EmergencyService extends Service {
         // TODO: Return the communication channel to the service.
         throw new UnsupportedOperationException("Not yet implemented");
     }
-
-    private String getLocation(){
+    DatabaseReference reference;
+    private void getLocation(){
 
         String User_id= FirebaseAuth.getInstance().getCurrentUser().getUid();
-        DatabaseReference reference = FirebaseDatabase.getInstance().getReference().child("Users").child(User_id).child("CurrentAddress").child(User_id).child("l");
+        reference = FirebaseDatabase.getInstance().getReference().child("Users").child(User_id).child("CurrentAddress").child(User_id).child("l");
 
         reference.addValueEventListener(new ValueEventListener() {
             @Override
@@ -88,12 +86,16 @@ public class EmergencyService extends Service {
 
                     Geocoder geocoder=new Geocoder(EmergencyService.this, Locale.getDefault());
 
-
                     try {
                         List<Address> myList = geocoder.getFromLocation(LocationLat,LocationLng, 1);
 
                         Address address = (Address) myList.get(0);
-                        myLocationAddressName=address.getAddressLine(0);
+                        myLocationAddressName=address.getAddressLine(0).toString();
+                        if(myLocationAddressName!=null) {
+                            sendSMS(phone, myLocationAddressName+"\n Emergency Situation");
+                            reference.removeEventListener(this);
+                            stopSelf();
+                        }
 
                     } catch (IOException e) {
                         e.printStackTrace();
@@ -111,11 +113,11 @@ public class EmergencyService extends Service {
             }
         });
 
-        return myLocationAddressName;
     }
 
 
     private void sendSMS(String phoneNumber, String message) {
+
         SmsManager sms = SmsManager.getDefault();
         sms.sendTextMessage(phoneNumber, null, message, null, null);
     }
