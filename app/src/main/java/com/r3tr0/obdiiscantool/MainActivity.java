@@ -94,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case 5:
-                        //startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
+                        startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
                         break;
 
 
@@ -170,6 +170,8 @@ public class MainActivity extends AppCompatActivity {
 
         return null;
     }
+
+
 
     @Override
     protected void onResume() {
