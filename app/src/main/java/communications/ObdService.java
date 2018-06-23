@@ -18,7 +18,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.UUID;
 
 import enums.ServiceCommand;
@@ -35,7 +34,7 @@ public class ObdService extends Service {
 
     public static final UUID myUUID = UUID.fromString("00001101-0000-1000-8000-00805f9b34fb");
     public static final String RECEIVER_ACTION = "com.r3tr0.OBDIIScanTool.communications.OBD";
-
+    public static final String ELM_NAME = "TDA81V012";
     private Intent intent1;
     private BluetoothServerSocket serverSocket;
     private BluetoothSocket bluetoothSocket;
@@ -268,7 +267,6 @@ public class ObdService extends Service {
     }
 
     public void write(byte[] bytes) throws IOException {
-        Log.e("sent data as bytes ", Arrays.toString(bytes));
         outputStream.write(bytes);
         outputStream.flush();
     }
