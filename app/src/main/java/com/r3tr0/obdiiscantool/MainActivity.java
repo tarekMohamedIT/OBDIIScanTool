@@ -25,7 +25,6 @@ import enums.ServiceCommand;
 import enums.ServiceFlag;
 import events.OnBroadcastReceivedListener;
 import events.OnItemClickListener;
-import models.FaultCode;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,10 +56,13 @@ public class MainActivity extends AppCompatActivity {
 
         ArrayList<RecyclerListAdapter.ListItem> listItems = new ArrayList<>();
         listItems.add(new RecyclerListAdapter.ListItem("Bluetooth", "Not connected", RecyclerListAdapterMode.fullWithTitleAndSubTitleMode, R.drawable.btnew, Color.parseColor("#ff22569f")));
-        listItems.add(new RecyclerListAdapter.ListItem("change input", "", RecyclerListAdapterMode.partMode, R.drawable.ic_change_input));
-        listItems.add(new RecyclerListAdapter.ListItem("general info", "", RecyclerListAdapterMode.partMode, R.drawable.ic_generalinfo));
-        listItems.add(new RecyclerListAdapter.ListItem("fault codes", "", RecyclerListAdapterMode.partMode, R.drawable.ic_faultcodes));
-        listItems.add(new RecyclerListAdapter.ListItem("record trips", "", RecyclerListAdapterMode.partMode, R.drawable.ic_recordatrip));
+        listItems.add(new RecyclerListAdapter.ListItem("change input", "", RecyclerListAdapterMode.partMode, R.drawable.input_method));
+        listItems.add(new RecyclerListAdapter.ListItem("general info", "", RecyclerListAdapterMode.partMode, R.drawable.general_info));
+        listItems.add(new RecyclerListAdapter.ListItem("fault codes", "", RecyclerListAdapterMode.partMode, R.drawable.diagnosis));
+        listItems.add(new RecyclerListAdapter.ListItem("record trips", "", RecyclerListAdapterMode.partMode, R.drawable.trip));
+        listItems.add(new RecyclerListAdapter.ListItem("Emergency", "", RecyclerListAdapterMode.partMode, R.drawable.emergency));
+        listItems.add(new RecyclerListAdapter.ListItem("Exit", "", RecyclerListAdapterMode.partMode, R.drawable.exit));
+
         adapter = new RecyclerListAdapter(this, listItems);
 
         adapter.setOnItemClickListener(new OnItemClickListener() {
@@ -88,6 +90,14 @@ public class MainActivity extends AppCompatActivity {
                         break;
                     case 4:
                         startActivity(new Intent(MainActivity.this, TripActivity.class));
+                        break;
+
+                    case 5:
+                        //startActivity(new Intent(MainActivity.this, EmergencyActivity.class));
+                        break;
+
+                    case 6:
+                        finish();
                         break;
                 }
             }
