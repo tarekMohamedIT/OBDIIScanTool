@@ -83,6 +83,11 @@ public class RegisterActivity extends AppCompatActivity {
                 final String pass =etPassword.getText().toString();
                 final String number=etNumber.getText().toString();
 
+                if(username.isEmpty()||email.isEmpty()||pass.isEmpty()||number.isEmpty())
+                    Toast.makeText(RegisterActivity.this, "You Must Enter Data", Toast.LENGTH_LONG).show();
+
+
+                else
 
                 mAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
