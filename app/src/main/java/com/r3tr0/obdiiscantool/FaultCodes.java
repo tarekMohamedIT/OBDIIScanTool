@@ -18,6 +18,7 @@ import communications.ObdService;
 import enums.ServiceCommand;
 import events.OnBroadcastReceivedListener;
 import helpers.BaseObdCommand;
+import models.FaultCode;
 
 public class FaultCodes extends AppCompatActivity {
 
@@ -39,12 +40,6 @@ public class FaultCodes extends AppCompatActivity {
 
         arrayList = new ArrayList<String>();
         commands = new ArrayList<>();
-        if (!ObdService.isReadingRealData) {
-            arrayList.add("1) Suspension problem");
-            arrayList.add("2) Error in fuel injection");
-            arrayList.add("3) Error in fuel injection");
-            arrayList.add("4) Brakes not working well");
-        }
         Badapter = new BluetoothAdapter(this, arrayList);
 
         Badapter.setOnItemClickListener(new BluetoothAdapter.OnItemClickListener() {
@@ -59,16 +54,24 @@ public class FaultCodes extends AppCompatActivity {
             public void onBroadcastReceived(Object message) {
                 Intent intent = (Intent) message;
 
-                String data = intent.getStringExtra("data");
-                Log.e("test", "received something!");
+                if (ObdService.isReadingRealData) {
+                    String data = intent.getStringExtra("data");
+                    Log.e("test", "received something!");
 
-                if (!gotFirstCommand) {// first command yarab :)
-                    Badapter.clear();
-                    Badapter.add("Fault codes number : " + commands.get(0).performCalculations(data.getBytes()));
-                    gotFirstCommand = true;
+                    if (!gotFirstCommand) {// first command yarab :)
+                        Badapter.clear();
+                        Badapter.add("Fault codes number : " + commands.get(0).performCalculations(data.getBytes()));
+                        gotFirstCommand = true;
+                    } else {
+                        commands.get(1).performCalculations(data.getBytes());
+                        gotFirstCommand = false;
+                    }
                 } else {
-                    commands.get(1).performCalculations(data.getBytes());
-                    gotFirstCommand = false;
+                    ArrayList<FaultCode> codes = intent.getParcelableArrayListExtra("data");
+                    Badapter.clear();
+                    for (FaultCode code : codes) {
+                        Badapter.add(code.getId() + " : " + code.getName());
+                    }
                 }
 
             }
@@ -77,36 +80,43 @@ public class FaultCodes extends AppCompatActivity {
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));
         recyclerView.setAdapter(Badapter);
 
-        commands.add(new BaseObdCommand<Integer>(this, "0101") {
-            @Override
-            public String getName() {
-                return "faults number";
-            }
+        if (ObdService.isReadingRealData) {
+            commands.add(new BaseObdCommand<Integer>(this, "0101") {
+                @Override
+                public String getName() {
+                    return "faults number";
+                }
 
-            @Override
-            public Integer performCalculations(byte[] bytes) {//e3ml el calculation w return el number ka integer
-                int number = Integer.parseInt(bytes[4] + "" + bytes[5], 16);
+                @Override
+                public Integer performCalculations(byte[] bytes) {//e3ml el calculation w return el number ka integer
+                    int number = Integer.parseInt(bytes[4] + "" + bytes[5], 16);
 
-                return number;
-            }
-        });
+                    return number;
+                }
+            });
 
-        commands.add(new BaseObdCommand(this, "03") {
-            @Override
-            public String getName() {
-                return "faults";//bla2
-            }
+            commands.add(new BaseObdCommand(this, "03") {
+                @Override
+                public String getName() {
+                    return "faults";//bla2
+                }
 
-            @Override
-            public Object performCalculations(byte[] bytes) {//hena return null bas kol error e3mlo add fel adapter
-                //Badapter.add("hena el error b3d ma t3mlo translate");
-                //int number = Integer.parseInt(bytes[0] + "" + bytes[1], 16);
-                return null;
-            }
-        });
+                @Override
+                public Object performCalculations(byte[] bytes) {//hena return null bas kol error e3mlo add fel adapter
+                    //Badapter.add("hena el error b3d ma t3mlo translate");
+                    //int number = Integer.parseInt(bytes[0] + "" + bytes[1], 16);
+                    return null;
+                }
+            });
 
-        thread = new CommandThread();
-        thread.start();
+            thread = new CommandThread();
+            thread.start();
+        } else {
+            Intent obdIntent = new Intent(this, ObdService.class);
+            obdIntent.putExtra("cmd", ServiceCommand.write);
+            obdIntent.putExtra("data", "fault");
+            startService(obdIntent);
+        }
 
     }
 
@@ -114,19 +124,23 @@ public class FaultCodes extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         registerReceiver(receiver, new IntentFilter(ObdService.RECEIVER_ACTION));
-        Intent obdIntent = new Intent(this, ObdService.class);
-        obdIntent.putExtra("cmd", ServiceCommand.startReading);
-        startService(obdIntent);
+        if (ObdService.isReadingRealData) {
+            Intent obdIntent = new Intent(this, ObdService.class);
+            obdIntent.putExtra("cmd", ServiceCommand.startReading);
+            startService(obdIntent);
+        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(receiver);
-        thread.stopRunning();
-        Intent obdIntent = new Intent(this, ObdService.class);
-        obdIntent.putExtra("cmd", ServiceCommand.stopReading);
-        startService(obdIntent);
+        if (ObdService.isReadingRealData) {
+            thread.stopRunning();
+            Intent obdIntent = new Intent(this, ObdService.class);
+            obdIntent.putExtra("cmd", ServiceCommand.stopReading);
+            startService(obdIntent);
+        }
     }
 
     public class CommandThread extends Thread {
