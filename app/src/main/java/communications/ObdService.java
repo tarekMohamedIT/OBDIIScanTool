@@ -315,8 +315,9 @@ public class ObdService extends Service {
                         Log.e("Data", c + "");
                         res.append(c);
                         if (res.toString().matches("TDA[0-9]+\\sV[0-9]+\\.[0-9]+\\s")
-                                || res.toString().matches("SEARCHING\\s[.]{3}]")
+                                || res.toString().matches("SEARCHING\\s[.]{3}\\s")
                                 || res.toString().matches("(BUS INIT)|(BUSINIT)")
+                                || res.toString().matches("(BUS ERROR)|(BUSERROR)")
                                 || res.toString().equals("?")) {
                             isExtra = true;
                             break;
