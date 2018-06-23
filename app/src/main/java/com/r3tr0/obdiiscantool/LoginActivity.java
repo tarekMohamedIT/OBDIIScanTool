@@ -1,9 +1,8 @@
 package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
-import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
@@ -11,7 +10,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
-import enums.ServiceFlag;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -83,27 +81,22 @@ public class LoginActivity extends AppCompatActivity {
         bt2.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String email = mail.getText().toString();
-                final String password = Password.getText().toString();
+                String email = mail.getText().toString();
+                String password = Password.getText().toString();
 
-                mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
+                if (mail.getText().toString().trim().isEmpty() || Password.getText().toString().trim().isEmpty())
+                    Toast.makeText(LoginActivity.this, "you must enter data", Toast.LENGTH_LONG).show();
+
+                else
+                    mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(Task<AuthResult> task) {
 
-                             if (mail.getText().toString().trim().isEmpty()||Password.getText().toString().trim().isEmpty()){
-                            Toast.makeText(LoginActivity.this,"you must enter data",Toast.LENGTH_LONG).show();
-
-
-
-                        }
-
-                        else if(!task.isSuccessful())
+                        if (!task.isSuccessful())
 
                         {
 
                             Toast.makeText(LoginActivity.this,"sign in error",Toast.LENGTH_LONG).show();
-
-
                         }
 
 
