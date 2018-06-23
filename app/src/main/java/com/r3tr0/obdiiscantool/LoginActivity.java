@@ -19,64 +19,69 @@ import com.google.firebase.auth.FirebaseUser;
 
 public class LoginActivity extends AppCompatActivity {
     private EditText Password;
-    private EditText mail;
+    private EditText mail = (EditText) findViewById(R.id.etmail);
     private Button bt2;
     private TextView RegisterLink;
 
 
-
-
-    private FirebaseAuth mAuth ;
+    private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
+    private TextWatcher LTextWatcher = new TextWatcher() {
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+        }
+
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) {
+            String email = mail.getText().toString().trim();
+            String pass = Password.getText().toString().trim();
+
+            bt2.setEnabled(!email.isEmpty() && !pass.isEmpty());
+        }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        Password=(EditText) findViewById(R.id.etPass2);
-        mail=(EditText) findViewById(R.id.etmail);
-        bt2 =(Button) findViewById(R.id.bt2);
+        Password = findViewById(R.id.etPass2);
+        bt2 = findViewById(R.id.bt2);
+        RegisterLink = findViewById(R.id.etText);
 
-         RegisterLink =(TextView) findViewById(R.id.etText);
         Password.addTextChangedListener(LTextWatcher);
         mail.addTextChangedListener(LTextWatcher);
 
-
-
-        mAuth=FirebaseAuth.getInstance();
-        firebaseAuthStateListener=new FirebaseAuth.AuthStateListener() {
+        mAuth = FirebaseAuth.getInstance();
+        firebaseAuthStateListener = new FirebaseAuth.AuthStateListener() {
             @Override
             public void onAuthStateChanged(FirebaseAuth firebaseAuth) {
 
                 FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
 
-                if(user != null)
-                {
-                    Intent intent = new Intent(LoginActivity.this,MainActivity.class);
+                if (user != null) {
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
                     return;
 
                 }
-
-
             }
         };
-
 
         RegisterLink.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                Intent registerIntent = new Intent(LoginActivity.this,RegisterActivity.class);
+                Intent registerIntent = new Intent(LoginActivity.this, RegisterActivity.class);
                 LoginActivity.this.startActivity(registerIntent);
-
-
             }
         });
-
-
 
         bt2.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -89,63 +94,26 @@ public class LoginActivity extends AppCompatActivity {
 
                 else
                     mAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(Task<AuthResult> task) {
+                        @Override
+                        public void onComplete(Task<AuthResult> task) {
 
-                        if (!task.isSuccessful())
+                            if (!task.isSuccessful()) {
 
-                        {
+                                Toast.makeText(LoginActivity.this, "sign in error", Toast.LENGTH_LONG).show();
+                            } else {
 
-                            Toast.makeText(LoginActivity.this,"sign in error",Toast.LENGTH_LONG).show();
+                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                startActivity(intent);
+                                finish();
+                                return;
+                            }
                         }
-
-
-
-                        else
-                        {
-
-                            Intent intent = new Intent(LoginActivity.this,MainActivity.class);
-                            startActivity(intent);
-                            finish();
-                            return;
-                        }
-
-
-
-
-                    }
-                });
+                    });
             }
         });
 
 
-
-
-
     }
 
-
-
-
-    private TextWatcher LTextWatcher = new TextWatcher() {
-        @Override
-        public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
-        }
-
-        @Override
-        public void onTextChanged(CharSequence s, int start, int before, int count) {
-            String email =mail.getText().toString().trim();
-            String pass =Password.getText().toString().trim();
-
-            bt2.setEnabled(!email.isEmpty()&&!pass.isEmpty());
-        }
-
-        @Override
-        public void afterTextChanged(Editable s) {
-
-        }
-    };
-
-    }
+}
 
