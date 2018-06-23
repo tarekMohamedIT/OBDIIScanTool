@@ -23,6 +23,8 @@ import com.directions.route.Route;
 import com.directions.route.RouteException;
 import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
+import com.firebase.geofire.GeoFire;
+import com.firebase.geofire.GeoLocation;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -76,8 +78,11 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
     //variables
     private int mDistanceToDestination,mDurationOfTrip,TripCounter=0 ;
 
-    private Boolean clicked =false ;
+    private Boolean clicked =false,position=false ;
     private String myLocationAddressName,myDestinationAddressName ;
+
+
+    private  String user_id = FirebaseAuth.getInstance().getCurrentUser().getUid();
 
 
 
@@ -125,16 +130,11 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
                 if(mDestinationLatLng!=null)
                 {
 
-
-                    mLocationRequest.setInterval(100);
-                    mLocationRequest.setFastestInterval(100);
-                    mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-
-
-
-
                     LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
                     mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,18f));
+
+
+                    position=true ;
 
                     if(x ==  0 && mLastLocation!=null)
                     {
@@ -167,6 +167,7 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
                 //mStart.setVisibility(View.VISIBLE);
                 //mEnd.setVisibility(View.GONE);
                 //mCancel.setVisibility(View.GONE);
+                position=false;
 
             }
         });
@@ -175,6 +176,7 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
            public void onClick(View v) {
 
+                position=false;
                 clicked=true;
                 endTrip();
                 erasePolyLines();
@@ -188,6 +190,8 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private void init(){
+
+
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
                 getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
@@ -247,6 +251,9 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
             @Override
             public void onClick(View v) {
                 getCurrentLocation();
+                LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,18f));
+
             }
         });
 
@@ -331,14 +338,16 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
         getCurrentLocation();
 
 
+
     }
+
 
     private void getCurrentLocation(){
 
         mLocationRequest = new LocationRequest();
-       // mLocationRequest.setInterval(100);
-        //mLocationRequest.setFastestInterval(100);
-        //mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        mLocationRequest.setInterval(100);
+        mLocationRequest.setFastestInterval(100);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
 
 
         if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -399,10 +408,27 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
 
 
                     mLastLocation = location;
-                    LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
 
-                    mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,18f));
 
+                    if(position)
+                    {
+                        LatLng latLng = new LatLng(mLastLocation.getLatitude(), mLastLocation.getLongitude());
+                        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng,18f));
+
+                    }
+                    DatabaseReference reference=FirebaseDatabase.getInstance().getReference().child("Users").child(user_id).child("CurrentAddress");
+
+                    GeoFire geoFire=new GeoFire(reference);
+                    geoFire.setLocation(user_id, new GeoLocation(mLastLocation.getLatitude(), mLastLocation.getLongitude()), new GeoFire.CompletionListener() {
+                        @Override
+                        public void onComplete(String key, DatabaseError error) {
+                            if (error != null) {
+                                System.err.println("There was an error saving the location to GeoFire: " + error);
+                            } else {
+                                System.out.println("Location saved on server successfully!");
+                            }
+                        }
+                    });
 
                 }
 

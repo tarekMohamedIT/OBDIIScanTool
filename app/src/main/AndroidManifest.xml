@@ -4,12 +4,9 @@
 
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
-
-
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-
 
     <application
         android:allowBackup="true"
@@ -19,13 +16,11 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
         <activity android:name=".SplashActivity">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-
         </activity>
         <activity android:name=".MainActivity" />
         <activity android:name=".ScanToolActivity" />
@@ -39,8 +34,9 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
         </activity>
-        <activity android:name=".TripActivity"
-            android:label="@string/title_activity_trip" >
+        <activity
+            android:name=".TripActivity"
+            android:label="@string/title_activity_trip">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".MainActivity" />
@@ -54,18 +50,20 @@
 
         <activity android:name=".SelectJsonActivity" />
         <activity android:name=".FaultCodesActivity" />
-        <activity android:name=".FaultCodes"/>
-        <activity android:name=".LoginActivity">
-
-
-
-        </activity>
-        <activity android:name=".RegisterActivity"></activity>
-
+        <activity android:name=".FaultCodes" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".RegisterActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
+
+        <activity android:name=".EmergencyActivity" />
+
+        <service
+            android:name="communications.EmergencyService"
+            android:enabled="true"
+            android:exported="true"></service>
     </application>
 
 </manifest>
