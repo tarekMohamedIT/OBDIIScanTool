@@ -90,7 +90,14 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onComplete(Task<AuthResult> task) {
 
-                        if(!task.isSuccessful())
+                             if (mail.getText().toString().trim().isEmpty()||Password.getText().toString().trim().isEmpty()){
+                            Toast.makeText(LoginActivity.this,"you must enter data",Toast.LENGTH_LONG).show();
+
+
+
+                        }
+
+                        else if(!task.isSuccessful())
 
                         {
 
@@ -98,6 +105,7 @@ public class LoginActivity extends AppCompatActivity {
 
 
                         }
+
 
 
                         else
@@ -108,6 +116,7 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
                             return;
                         }
+
 
 
 
