@@ -42,9 +42,9 @@
 
     <Button
         android:id="@+id/bt2"
-        android:layout_width="200dp"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="100dp"
+        android:layout_marginLeft="130dp"
         android:layout_marginTop="60dp"
-        android:text="SIGN IN" />
+        android:text="Sign up" />
 </LinearLayout>

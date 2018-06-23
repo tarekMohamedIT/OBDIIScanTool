@@ -1,6 +1,7 @@
 package com.r3tr0.obdiiscantool;
 
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.text.Editable;
@@ -10,6 +11,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+import enums.ServiceFlag;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,6 +24,9 @@ public class LoginActivity extends AppCompatActivity {
     private EditText mail;
     private Button bt2;
     private TextView RegisterLink;
+
+
+
 
     private FirebaseAuth mAuth ;
     private FirebaseAuth.AuthStateListener firebaseAuthStateListener;
@@ -80,6 +85,7 @@ public class LoginActivity extends AppCompatActivity {
             public void onClick(View v) {
                 final String email = mail.getText().toString();
                 final String password = Password.getText().toString();
+
                 mAuth.signInWithEmailAndPassword(email,password).addOnCompleteListener(LoginActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
                     public void onComplete(Task<AuthResult> task) {
@@ -90,7 +96,11 @@ public class LoginActivity extends AppCompatActivity {
 
                             Toast.makeText(LoginActivity.this,"sign in error",Toast.LENGTH_LONG).show();
 
-                        }else
+
+                        }
+
+
+                        else
                         {
 
                             Intent intent = new Intent(LoginActivity.this,MainActivity.class);
@@ -98,6 +108,8 @@ public class LoginActivity extends AppCompatActivity {
                             finish();
                             return;
                         }
+
+
 
                     }
                 });
@@ -109,6 +121,9 @@ public class LoginActivity extends AppCompatActivity {
 
 
     }
+
+
+
 
     private TextWatcher LTextWatcher = new TextWatcher() {
         @Override
