@@ -112,8 +112,14 @@ public class RegisterActivity extends AppCompatActivity {
 
                             current_user_id.setValue(map);
 
+                            Toast.makeText(RegisterActivity.this,"you signed up successfully",Toast.LENGTH_LONG).show();
+
 
                         }
+                        Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                        return;
 
 
                     }
