@@ -39,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_main);
 
         obdIntent = new Intent(this, ObdService.class);
         receiver = new ObdReceiver(new OnBroadcastReceivedListener() {
@@ -56,13 +56,13 @@ public class MainActivity extends AppCompatActivity {
         });
 
         ArrayList<RecyclerListAdapter.ListItem> listItems = new ArrayList<>();
-        listItems.add(new RecyclerListAdapter.ListItem("Bluetooth", "Not connected", RecyclerListAdapterMode.fullWithTitleAndSubTitleMode, R.drawable.btnew, Color.parseColor("#ff22569f")));
-        listItems.add(new RecyclerListAdapter.ListItem("change input", "", RecyclerListAdapterMode.partMode, R.drawable.input_method));
-        listItems.add(new RecyclerListAdapter.ListItem("general info", "", RecyclerListAdapterMode.partMode, R.drawable.general_info));
-        listItems.add(new RecyclerListAdapter.ListItem("fault codes", "", RecyclerListAdapterMode.partMode, R.drawable.diagnosis));
-        listItems.add(new RecyclerListAdapter.ListItem("record trips", "", RecyclerListAdapterMode.partMode, R.drawable.trip));
-        listItems.add(new RecyclerListAdapter.ListItem("Emergency", "", RecyclerListAdapterMode.partMode, R.drawable.emergency));
-        listItems.add(new RecyclerListAdapter.ListItem("Exit", "", RecyclerListAdapterMode.partMode, R.drawable.exit));
+        listItems.add(new RecyclerListAdapter.ListItem("Bluetooth", "Not connected", RecyclerListAdapterMode.fullWithTitleAndSubTitleMode, com.r3tr0.obdiiscantool.R.drawable.btnew, Color.parseColor("#ff22569f")));
+        listItems.add(new RecyclerListAdapter.ListItem("change input", "", RecyclerListAdapterMode.partMode, com.r3tr0.obdiiscantool.R.drawable.input_method));
+        listItems.add(new RecyclerListAdapter.ListItem("general info", "", RecyclerListAdapterMode.partMode, com.r3tr0.obdiiscantool.R.drawable.general_info));
+        listItems.add(new RecyclerListAdapter.ListItem("fault codes", "", RecyclerListAdapterMode.partMode, com.r3tr0.obdiiscantool.R.drawable.diagnosis));
+        listItems.add(new RecyclerListAdapter.ListItem("record trips", "", RecyclerListAdapterMode.partMode, com.r3tr0.obdiiscantool.R.drawable.trip));
+        listItems.add(new RecyclerListAdapter.ListItem("Emergency", "", RecyclerListAdapterMode.partMode, com.r3tr0.obdiiscantool.R.drawable.emergency));
+        listItems.add(new RecyclerListAdapter.ListItem("Exit", "", RecyclerListAdapterMode.partMode, com.r3tr0.obdiiscantool.R.drawable.exit));
 
         adapter = new RecyclerListAdapter(this, listItems);
 
@@ -71,7 +71,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(int position) {
                 switch (position){
                     case 0 :
-                        if (adapter.getItem(position).getResImageID() == R.drawable.btnew)
+                        if (adapter.getItem(position).getResImageID() == com.r3tr0.obdiiscantool.R.drawable.btnew)
                             startActivity(new Intent(MainActivity.this, BluetoothActivity.class));
 
                         else {
@@ -123,11 +123,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(int position) {
                 if (position == 0) {
-                    adapter.changeImage(0, R.drawable.jsonew);
+                    adapter.changeImage(0, com.r3tr0.obdiiscantool.R.drawable.jsonew);
                     adapter.changeColor(0, Color.parseColor("#ff634016"));
                     adapter.changeTitle(0, "Json files");
                 } else {
-                    adapter.changeImage(0, R.drawable.btnew);
+                    adapter.changeImage(0, com.r3tr0.obdiiscantool.R.drawable.btnew);
                     adapter.changeColor(0, Color.parseColor("#ff22569f"));
                     adapter.changeTitle(0, "Bluetooth");
                 }
@@ -136,7 +136,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        recyclerView = findViewById(R.id.devicesRecyclerView);
+        recyclerView = findViewById(com.r3tr0.obdiiscantool.R.id.devicesRecyclerView);
 
         GridLayoutManager manager = new GridLayoutManager(this, LinearLayoutManager.VERTICAL);
         manager.setSpanCount(2);

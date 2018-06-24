@@ -35,8 +35,8 @@ public class FaultCodes extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_fault_codes);
-        RecyclerView recyclerView = findViewById(R.id.faultcodesRecyclerView);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_fault_codes);
+        RecyclerView recyclerView = findViewById(com.r3tr0.obdiiscantool.R.id.faultcodesRecyclerView);
 
 
         arrayList = new ArrayList<String>();
@@ -155,7 +155,7 @@ public class FaultCodes extends AppCompatActivity {
             startService(obdIntent);
         }
 
-        Button resetButton = findViewById(R.id.refreshButton);
+        Button resetButton = findViewById(com.r3tr0.obdiiscantool.R.id.refreshButton);
         resetButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

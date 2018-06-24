@@ -2,12 +2,9 @@ package communications;
 
 import android.app.Service;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.location.Address;
 import android.location.Geocoder;
 import android.os.IBinder;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.telephony.SmsManager;
 
 import com.google.firebase.auth.FirebaseAuth;
@@ -16,8 +13,6 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
-import com.r3tr0.obdiiscantool.EmergencyActivity;
-import com.r3tr0.obdiiscantool.Manifest;
 
 import java.io.IOException;
 import java.util.List;

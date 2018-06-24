@@ -33,8 +33,8 @@ public class GeneralInformationActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_general_information);
-        RecyclerView recyclerView = findViewById(R.id.GeneralInformation);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_general_information);
+        RecyclerView recyclerView = findViewById(com.r3tr0.obdiiscantool.R.id.GeneralInformation);
         commands = new ArrayList<>();
 
         ArrayList<models.GeneralInformation> arrayList = new ArrayList<>();

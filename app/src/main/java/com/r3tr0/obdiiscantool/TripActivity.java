@@ -13,7 +13,6 @@ import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
 import android.view.View;
-import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -25,7 +24,6 @@ import com.directions.route.Routing;
 import com.directions.route.RoutingListener;
 import com.firebase.geofire.GeoFire;
 import com.firebase.geofire.GeoLocation;
-import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
@@ -48,7 +46,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
 import java.io.IOException;
@@ -64,7 +61,7 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
 
 
     private List<Polyline> polylines;
-    private static final int[] COLORS = new int[]{R.color.primary_dark_material_light};
+    private static final int[] COLORS = new int[]{com.r3tr0.obdiiscantool.R.color.primary_dark_material_light};
 
     //widgets
 
@@ -98,7 +95,7 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trip);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_trip);
 
 
         mFusedLocationProviderClient= LocationServices.getFusedLocationProviderClient(this);
@@ -108,17 +105,17 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
         detectEndtrip1.start();
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
+                .findFragmentById(com.r3tr0.obdiiscantool.R.id.map);
         mapFragment.getMapAsync(this);
 
         polylines = new ArrayList<>();
 
-        mGps=(ImageView)findViewById(R.id.ic_gps);
+        mGps=(ImageView)findViewById(com.r3tr0.obdiiscantool.R.id.ic_gps);
 
 
-        mStart=(Button)findViewById(R.id.StartTrip);
-        mEnd=(Button)findViewById(R.id.EndTrip);
-        mCancel=(Button)findViewById(R.id.CancelTrip);
+        mStart=(Button)findViewById(com.r3tr0.obdiiscantool.R.id.StartTrip);
+        mEnd=(Button)findViewById(com.r3tr0.obdiiscantool.R.id.EndTrip);
+        mCancel=(Button)findViewById(com.r3tr0.obdiiscantool.R.id.CancelTrip);
 
 
 
@@ -194,7 +191,7 @@ public class TripActivity extends FragmentActivity implements OnMapReadyCallback
 
 
         PlaceAutocompleteFragment autocompleteFragment = (PlaceAutocompleteFragment)
-                getFragmentManager().findFragmentById(R.id.place_autocomplete_fragment);
+                getFragmentManager().findFragmentById(com.r3tr0.obdiiscantool.R.id.place_autocomplete_fragment);
 
         autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
             @Override

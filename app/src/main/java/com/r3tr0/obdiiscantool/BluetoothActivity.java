@@ -29,8 +29,8 @@ public class BluetoothActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_bluetooth);
-        RecyclerView recyclerView =findViewById(R.id.bluetoothRecyclerView);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_bluetooth);
+        RecyclerView recyclerView =findViewById(com.r3tr0.obdiiscantool.R.id.bluetoothRecyclerView);
 
         bluetoothAdapter = new BluetoothAdapter(this, new ArrayList<String>());
         recyclerView.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false));

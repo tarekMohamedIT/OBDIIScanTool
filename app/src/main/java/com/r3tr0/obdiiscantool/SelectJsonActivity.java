@@ -39,12 +39,12 @@ public class SelectJsonActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         obdIntent = new Intent(this, ObdService.class);
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_select);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_select);
 
 
-        generalInformationButton = findViewById(R.id.generalButton);
-        faultCodesButton = findViewById(R.id.faultButton);
-        acceptButton = findViewById(R.id.acceptButton);
+        generalInformationButton = findViewById(com.r3tr0.obdiiscantool.R.id.generalButton);
+        faultCodesButton = findViewById(com.r3tr0.obdiiscantool.R.id.faultButton);
+        acceptButton = findViewById(com.r3tr0.obdiiscantool.R.id.acceptButton);
 
 
         generalInformationButton.setOnClickListener(new View.OnClickListener() {

@@ -32,13 +32,13 @@ public class LoginActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_login);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_login);
 
-        Password=(EditText) findViewById(R.id.etPass2);
-        mail=(EditText) findViewById(R.id.etmail);
-        bt2 =(Button) findViewById(R.id.bt2);
+        Password=(EditText) findViewById(com.r3tr0.obdiiscantool.R.id.etPass2);
+        mail=(EditText) findViewById(com.r3tr0.obdiiscantool.R.id.etmail);
+        bt2 =(Button) findViewById(com.r3tr0.obdiiscantool.R.id.bt2);
 
-         RegisterLink =(TextView) findViewById(R.id.etText);
+         RegisterLink =(TextView) findViewById(com.r3tr0.obdiiscantool.R.id.etText);
         Password.addTextChangedListener(LTextWatcher);
         mail.addTextChangedListener(LTextWatcher);
 

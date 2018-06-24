@@ -8,7 +8,7 @@ public class TripEndActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_trip_end);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_trip_end);
 
     }
 }

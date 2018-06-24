@@ -37,13 +37,13 @@ public class RegisterActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_register);
+        setContentView(com.r3tr0.obdiiscantool.R.layout.activity_register);
 
-        etname =(EditText) findViewById(R.id.etname);
-        etmail =(EditText) findViewById(R.id.etemail);
-        etPassword =(EditText) findViewById(R.id.etpass);
-        etNumber =(EditText) findViewById(R.id.etnumber);
-        bt1 =(Button) findViewById(R.id.bt2);
+        etname =(EditText) findViewById(com.r3tr0.obdiiscantool.R.id.etname);
+        etmail =(EditText) findViewById(com.r3tr0.obdiiscantool.R.id.etemail);
+        etPassword =(EditText) findViewById(com.r3tr0.obdiiscantool.R.id.etpass);
+        etNumber =(EditText) findViewById(com.r3tr0.obdiiscantool.R.id.etnumber);
+        bt1 =(Button) findViewById(com.r3tr0.obdiiscantool.R.id.bt2);
 
 
         etname.addTextChangedListener(loginTextwatcher);
