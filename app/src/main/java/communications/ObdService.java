@@ -288,13 +288,16 @@ public class ObdService extends Service {
     }
 
     private class ReadingThread extends Thread {
-        private volatile boolean isStop = true;
+        private volatile boolean isStarted = false;
         private boolean isExtra = false;
 
         @Override
         public synchronized void start() {
-            super.start();
-            isStop = true;
+            if (!isStarted) {
+                super.start();
+                isStarted = true;
+            } else
+                Toast.makeText(ObdService.this, "The service is already reading!", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -302,11 +305,11 @@ public class ObdService extends Service {
             super.run();
 
             char c;
-            while (isStop) {
+            while (isStarted) {
                 try {
-                    byte b = 0;
+                    byte b;
                     StringBuilder res = new StringBuilder();
-                    while (((b = (byte) inputStream.read()) > -1)) {
+                    while (isStarted && ((b = (byte) inputStream.read()) > -1)) {
                         c = (char) b;
                         if (c == '>') // read until '>' arrives
                         {
@@ -322,7 +325,6 @@ public class ObdService extends Service {
                             isExtra = true;
                             break;
                         }
-
                     }
 
                     String result = res.toString().replaceAll("\\s", "");
@@ -356,7 +358,7 @@ public class ObdService extends Service {
         }
 
         public void stopReading() {
-            this.isStop = false;
+            this.isStarted = false;
         }
     }
 }
