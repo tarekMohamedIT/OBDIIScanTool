@@ -28,7 +28,7 @@ public class FaultCodes extends AppCompatActivity {
     ArrayList<BaseObdCommand> commands;
     ArrayList arrayList;
     boolean gotFirstCommand = false;
-    int currentWorkingIndex;
+    int currentWorkingIndex,numberOffaults=0;
     CommandThread thread;
     BluetoothAdapter Badapter;
 
@@ -62,6 +62,7 @@ public class FaultCodes extends AppCompatActivity {
                     if (!gotFirstCommand) {// first command yarab :)
                         Badapter.clear();
                         Badapter.add("Fault codes number : " + commands.get(0).performCalculations(data.replace(ObdService.ELM_NAME, "").getBytes()));
+                        numberOffaults= (int) commands.get(0).performCalculations(data.replace(ObdService.ELM_NAME, "").getBytes());
                         gotFirstCommand = true;
                     } else {
                         commands.get(1).performCalculations(data.getBytes());
@@ -104,6 +105,40 @@ public class FaultCodes extends AppCompatActivity {
                 public Object performCalculations(byte[] bytes) {//hena return null bas kol error e3mlo add fel adapter
                     //Badapter.add("hena el error b3d ma t3mlo translate");
                     //int number = Integer.parseInt(bytes[0] + "" + bytes[1], 16);
+
+                    if(numberOffaults==0)
+                        return null ;
+                    else
+                    {
+                        int counter = (numberOffaults*4) ;
+
+                        for (int i = 2 ; i<=counter ; i+=4)
+                        {
+                            int identifyErrorType = Integer.parseInt(String.valueOf(((char) (bytes[i] & 0xff))),16);
+                            int FirstByte=Integer.parseInt(String.valueOf(((char) (bytes[i+1] & 0xff))),16);
+                            int SecondByte=Integer.parseInt(String.valueOf(((char) (bytes[i+2] & 0xff))),16);
+                            int ThirdByte =Integer.parseInt(String.valueOf(((char) (bytes[i+3] & 0xff))),16);
+                            if(identifyErrorType==0||identifyErrorType==1||identifyErrorType==2||identifyErrorType==3)
+                            {
+                                Badapter.add("Fault Code : " + "P"+identifyErrorType+FirstByte+SecondByte+ThirdByte);
+
+                            }else if (identifyErrorType==4||identifyErrorType==5||identifyErrorType==6||identifyErrorType==7)
+                            {
+                                Badapter.add("Fault Code : " + "C"+identifyErrorType+FirstByte+SecondByte+ThirdByte);
+                            }
+                            else if (identifyErrorType==8||identifyErrorType==9||identifyErrorType==10||identifyErrorType==11)
+                            {
+                                Badapter.add("Fault Code : " + "B"+identifyErrorType+FirstByte+SecondByte+ThirdByte);
+                            }
+                            else if (identifyErrorType==12||identifyErrorType==13||identifyErrorType==14||identifyErrorType==15)
+                            {
+                                Badapter.add("Fault Code : " + "U"+identifyErrorType+FirstByte+SecondByte+ThirdByte);
+                            }
+                        }
+
+                    }
+
+
 
                     Log.e("test perform ", Arrays.toString(bytes));
                     Log.e("test perform int", String.valueOf(bytes));
