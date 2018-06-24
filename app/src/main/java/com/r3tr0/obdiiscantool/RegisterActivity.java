@@ -83,6 +83,11 @@ public class RegisterActivity extends AppCompatActivity {
                 final String pass =etPassword.getText().toString();
                 final String number=etNumber.getText().toString();
 
+                if(username.isEmpty()||email.isEmpty()||pass.isEmpty()||number.isEmpty())
+                    Toast.makeText(RegisterActivity.this, "You Must Enter Data", Toast.LENGTH_LONG).show();
+
+
+                else
 
                 mAuth.createUserWithEmailAndPassword(email,pass).addOnCompleteListener(RegisterActivity.this, new OnCompleteListener<AuthResult>() {
                     @Override
@@ -107,8 +112,14 @@ public class RegisterActivity extends AppCompatActivity {
 
                             current_user_id.setValue(map);
 
+                            Toast.makeText(RegisterActivity.this,"you signed up successfully",Toast.LENGTH_LONG).show();
+
 
                         }
+                        Intent intent = new Intent(RegisterActivity.this,LoginActivity.class);
+                        startActivity(intent);
+                        finish();
+                        return;
 
 
                     }

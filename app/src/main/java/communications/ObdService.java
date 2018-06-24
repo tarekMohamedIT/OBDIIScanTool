@@ -288,12 +288,16 @@ public class ObdService extends Service {
     }
 
     private class ReadingThread extends Thread {
-        private volatile boolean isStop = true;
+        private volatile boolean isStarted = false;
+        private boolean isExtra = false;
 
         @Override
         public synchronized void start() {
-            super.start();
-            isStop = true;
+            if (!isStarted) {
+                super.start();
+                isStarted = true;
+            } else
+                Toast.makeText(ObdService.this, "The service is already reading!", Toast.LENGTH_LONG).show();
         }
 
         @Override
@@ -301,11 +305,11 @@ public class ObdService extends Service {
             super.run();
 
             char c;
-            while (isStop) {
+            while (isStarted) {
                 try {
-                    byte b = 0;
+                    byte b;
                     StringBuilder res = new StringBuilder();
-                    while (((b = (byte) inputStream.read()) > -1)) {
+                    while (isStarted && ((b = (byte) inputStream.read()) > -1)) {
                         c = (char) b;
                         if (c == '>') // read until '>' arrives
                         {
@@ -313,25 +317,37 @@ public class ObdService extends Service {
                         }
                         Log.e("Data", c + "");
                         res.append(c);
-                        if (res.toString().matches("TDA[0-9]+\\sV[0-9]+\\.[0-9]+\\s"))
+                        if (res.toString().matches("TDA[0-9]+\\sV[0-9]+\\.[0-9]+\\s")
+                                || res.toString().matches("SEARCHING\\s[.]{3}\\s")
+                                || res.toString().matches("(BUS INIT)|(BUSINIT)")
+                                || res.toString().matches("(BUS ERROR)|(BUSERROR)")
+                                || res.toString().equals("?")) {
+                            isExtra = true;
                             break;
+                        }
                     }
 
-                    String result = res.toString().replaceAll("SEARCHING\\.+", "");
-                    result = result.replaceAll("\\s", "");
-                    result = result.replaceAll("(BUS INIT)|(BUSINIT)|(\\.)", "");
+                    String result = res.toString().replaceAll("\\s", "");
 
                     if (result.length() > 0) {
                         Log.e("test thread", "read");
-                        intent1.putExtra("data", result);
-                        sendBroadcast(intent1);
-                        intent1.removeExtra("data");
+                        if (isExtra) {
+                            intent1.putExtra("extra", result);
+                            sendBroadcast(intent1);
+                            intent1.removeExtra("extra");
+                        } else {
+                            intent1.putExtra("data", result);
+                            sendBroadcast(intent1);
+                            intent1.removeExtra("data");
+                        }
                     } else {
                         Log.e("test thread", "read");
                         intent1.putExtra("data", "");
                         sendBroadcast(intent1);
                         intent1.removeExtra("data");
                     }
+
+                    isExtra = false;
                     //bytes = inputStream.read(buffer);
                     //tempMsg = new String(buffer,0,bytes);
 
@@ -342,9 +358,7 @@ public class ObdService extends Service {
         }
 
         public void stopReading() {
-            this.isStop = false;
+            this.isStarted = false;
         }
     }
-
-
 }
