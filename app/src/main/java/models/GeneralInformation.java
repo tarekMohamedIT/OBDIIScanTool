@@ -12,6 +12,7 @@ import java.util.Random;
  */
 
 public class GeneralInformation implements Parcelable {
+
     public static final Creator<GeneralInformation> CREATOR = new Creator<GeneralInformation>() {
         @Override
         public GeneralInformation createFromParcel(Parcel in) {
@@ -23,22 +24,31 @@ public class GeneralInformation implements Parcelable {
             return new GeneralInformation[size];
         }
     };
+
     private int type;
     private String headline;
     private List<Float> values;
     private float maxValue;
     private float usedValue;
 
+
     public GeneralInformation(int type, String headline, List<Float> values) {
         this.type = type;
         this.headline = headline;
         this.values = values;
         this.maxValue = -1;
-        for (float number : values)
-            if (number > this.maxValue)
-                this.maxValue = number;
+        if (values != null)
+            for (float number : values)
+                if (number > this.maxValue)
+                    this.maxValue = number;
 
         usedValue = -1;
+    }
+
+    public GeneralInformation(int type, String headline, float usedValue) {
+        this.type = type;
+        this.headline = headline;
+        this.usedValue = usedValue;
     }
 
     protected GeneralInformation(Parcel in) {
@@ -64,7 +74,7 @@ public class GeneralInformation implements Parcelable {
             maxValue = value;
     }
 
-    public float getValueAt(int position) {
+    public Float getValueAt(int position) {
         return values.get(position);
     }
 
@@ -95,10 +105,13 @@ public class GeneralInformation implements Parcelable {
     }
 
     public float generateValue() {
-        Random random = new Random();
-        int position = random.nextInt(values.size() - 1);
-        usedValue = position;
-        return values.get(position);
+        if (values != null) {
+            Random random = new Random();
+            int position = random.nextInt(values.size() - 1);
+            usedValue = position;
+            return values.get(position);
+        }
+        return usedValue;
     }
 
     public float getMaxValue() {

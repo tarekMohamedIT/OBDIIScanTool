@@ -2,6 +2,7 @@ package adapters;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -70,6 +71,9 @@ public class GeneralInformationAdapter extends RecyclerView.Adapter<GeneralInfor
         if (!ObdService.isReadingRealData) {
             holder.headlineTextView.setText(generalInformationArrayList.get(position).getHeadline());
             holder.gauge.setCurrentProgress(0);
+            Log.e("onBind", "max : " + generalInformationArrayList.get(position).getMaxValue() + ", Min : 0");
+            Log.e("onBind2", "items : " + generalInformationArrayList.get(position).getValues().toString());
+
             holder.gauge.setTotalProgress(generalInformationArrayList.get(position).getMaxValue());
             float val = generalInformationArrayList.get(position).generateValue();
             holder.gauge.setCurrentProgress(val);

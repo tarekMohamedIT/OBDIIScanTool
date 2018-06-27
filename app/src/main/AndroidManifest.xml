@@ -7,7 +7,8 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.SEND_SMS"/>
+    <uses-permission android:name="android.permission.SEND_SMS" />
+
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -15,58 +16,57 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name="com.r3tr0.obdiiscantool.SplashActivity">
+        <activity android:name=".SplashActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="com.r3tr0.obdiiscantool.MainActivity">
-
-        </activity>
-        <activity android:name="com.r3tr0.obdiiscantool.BluetoothActivity">
+        <activity android:name=".BluetoothActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.r3tr0.obdiiscantool.MainActivity" />
         </activity>
-        <activity android:name="com.r3tr0.obdiiscantool.GeneralInformationActivity">
+        <activity android:name=".GeneralInformationActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.r3tr0.obdiiscantool.MainActivity" />
         </activity>
         <activity
-            android:name="com.r3tr0.obdiiscantool.TripActivity"
+            android:name=".TripActivity"
             android:label="@string/title_activity_trip">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.r3tr0.obdiiscantool.MainActivity" />
-
-
         </activity>
-        <activity android:name="com.r3tr0.obdiiscantool.TripEndActivity" />
+        <activity android:name=".MainActivity" />
+        <activity android:name=".TripEndActivity" />
+        <activity android:name=".SelectJsonActivity" />
+        <activity android:name=".FaultCodesActivity" />
+        <activity android:name=".FaultCodes" />
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".RegisterActivity" />
+        <activity android:name=".EmergencyActivity" />
 
+        <service
+            android:name="communications.EmergencyService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name="communications.CommandsService"
+            android:enabled="true"
+            android:exported="false" />
         <service
             android:name="communications.ObdService"
             android:enabled="true"
             android:exported="false" />
 
-        <activity android:name="com.r3tr0.obdiiscantool.SelectJsonActivity" />
-        <activity android:name="com.r3tr0.obdiiscantool.FaultCodesActivity" />
-        <activity android:name="com.r3tr0.obdiiscantool.FaultCodes" />
-        <activity android:name="com.r3tr0.obdiiscantool.LoginActivity" />
-        <activity android:name="com.r3tr0.obdiiscantool.RegisterActivity" />
-
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
 
-        <activity android:name="com.r3tr0.obdiiscantool.EmergencyActivity" />
-
-        <service
-            android:name="communications.EmergencyService"
-            android:enabled="true"
-            android:exported="true"></service>
+        <activity android:name=".IntroductionActivity"></activity>
     </application>
 
 </manifest>

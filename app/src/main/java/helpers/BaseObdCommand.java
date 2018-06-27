@@ -7,7 +7,7 @@ import communications.ObdService;
 import enums.ServiceCommand;
 
 public abstract class BaseObdCommand<output> {
-    String commandString;
+    private String commandString;
     private final Intent intent;
     private Context context;
 
@@ -18,6 +18,8 @@ public abstract class BaseObdCommand<output> {
     }
 
     public abstract String getName();
+
+    public abstract Integer getType();
 
     public abstract output performCalculations(byte[] bytes);
 

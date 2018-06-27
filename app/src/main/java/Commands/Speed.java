@@ -5,16 +5,15 @@ import android.content.Context;
 import enums.CommandType;
 import helpers.BaseObdCommand;
 
-public class FuelLevel extends BaseObdCommand<Integer> {
+public class Speed extends BaseObdCommand<Integer> {
 
-
-    public FuelLevel(Context context) {
-        super(context, "012F");
+    public Speed(Context context) {
+        super(context, "010D");
     }
 
     @Override
     public String getName() {
-        return "fuel level";
+        return "Speed";
     }
 
     @Override
@@ -24,6 +23,7 @@ public class FuelLevel extends BaseObdCommand<Integer> {
 
     @Override
     public Integer performCalculations(byte[] bytes) {
-        return (100 / 255) * (((Byte) bytes[2]).intValue() & 0xff);
+        Byte speed = bytes[2];
+        return (speed.intValue() & 0xff);
     }
 }

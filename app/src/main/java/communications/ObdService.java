@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothServerSocket;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.IBinder;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -17,6 +18,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.UUID;
 
@@ -65,11 +67,16 @@ public class ObdService extends Service {
             this.flag = ServiceFlag.disconnected;
             initializeBluetooth((BluetoothDevice) intent.getParcelableExtra("device"));
             isReadingRealData = true;
-            if (flag == ServiceFlag.connected)
+            if (flag == ServiceFlag.connected) {
                 readingThread = new ReadingThread();
+                readingThread.start();
+            }
         } else if (command == ServiceCommand.disconnect) {
             if (bluetoothSocket != null)
                 try {
+
+                    if (readingThread.isStarted)
+                        readingThread.stopReading();
                     inputStream = null;
                     outputStream = null;
                     bluetoothSocket.close();
@@ -95,7 +102,17 @@ public class ObdService extends Service {
                     e.printStackTrace();
                 }
             } else {
-                intent1.putExtra("data", readJsonFile(data));
+                Object result = readJsonFile(data);
+
+                Log.e("res", result.getClass().getSimpleName() + " and is implementing Parcelable : " + (result instanceof Parcelable));
+
+                if (result instanceof Parcelable)
+                    intent1.putExtra("data", (Parcelable) result);
+                else if (result instanceof ArrayList<?>)
+                    intent1.putExtra("data", (ArrayList) result);
+                else
+                    intent1.putExtra("data", (Serializable) result);
+
                 sendBroadcast(intent1);
                 intent1.removeExtra("data");
             }
@@ -119,16 +136,20 @@ public class ObdService extends Service {
         return null;
     }
 
-    private ArrayList<GeneralInformation> getAllGeneralInformationItems() {
+    private ArrayList<GeneralInformation> getAllGeneralInformationItems(String keyword) {
         ArrayList<GeneralInformation> generalInformations = new ArrayList<>();
         try {
             JSONArray array = new JSONObject(jsonGeneralData).getJSONArray("car1");
             for (int j = 0; j < array.length(); j += 8) {
                 for (int i = 0; i < 8; i++) {
                     JSONObject gaugeObject = array.getJSONObject(i + j);
-                    if (j == 0)
-                        generalInformations.add(new GeneralInformation(0, gaugeObject.getString("name"), new ArrayList<Float>()));
-                    generalInformations.get(i).addValue((float) gaugeObject.getDouble("value"));
+                    Log.e("test : ", gaugeObject.getString("name") + " == " + keyword + " : " + keyword.equals(gaugeObject.getString("name").trim().replace("_", " ")));
+
+                    if (keyword.equals("") || keyword.equals(gaugeObject.getString("name").trim().replace("_", " "))) {
+                        if (j == 0)
+                            generalInformations.add(new GeneralInformation(0, gaugeObject.getString("name"), new ArrayList<Float>()));
+                        generalInformations.get(i).addValue((float) gaugeObject.getDouble("value"));
+                    }
                 }
             }
 
@@ -138,6 +159,31 @@ public class ObdService extends Service {
         }
 
         return generalInformations;
+    }
+
+    private GeneralInformation getGeneralInformationByName(String keyword) {
+        GeneralInformation information = null;
+        try {
+            JSONArray array = new JSONObject(jsonGeneralData).getJSONArray("car1");
+            for (int j = 0; j < array.length(); j += 8) {
+                for (int i = 0; i < 8; i++) {
+                    JSONObject gaugeObject = array.getJSONObject(i + j);
+                    if (keyword.equals("") || keyword.equals(gaugeObject.getString("name").trim().replace("_", " "))) {
+                        if (j == 0)
+                            information = new GeneralInformation(0, gaugeObject.getString("name"), new ArrayList<Float>());
+                        information.addValue((float) gaugeObject.getDouble("value"));
+                    }
+
+                    if (j != 0 && information == null)
+                        break;
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        return information;
     }
 
     private ArrayList<FaultCode> getAllFaultCodeItems() {
@@ -217,7 +263,7 @@ public class ObdService extends Service {
 
         try {
             this.jsonGeneralData = jsonGeneralData;
-            getAllGeneralInformationItems();
+            getAllGeneralInformationItems("");
         } catch (RuntimeException e) {
             this.flag = ServiceFlag.invalidGeneralInformation;
             intent1.putExtra("status", flag);
@@ -266,19 +312,40 @@ public class ObdService extends Service {
         intent1.removeExtra("status");
     }
 
-    public void write(byte[] bytes) throws IOException {
+    public synchronized void write(byte[] bytes) throws IOException {
         outputStream.write(bytes);
         outputStream.flush();
     }
 
-    public ArrayList readJsonFile(String type) {
-        if (type.equals("general"))
-            return getAllGeneralInformationItems();
+    public Object readJsonFile(String type) {
 
-        else if (type.equals("fault"))
-            return getAllFaultCodeItems();
+        Object returned;
 
-        return null;
+        switch (type) {
+            case "general":
+                returned = getAllGeneralInformationItems("");
+                break;
+            case "fault":
+                returned = getAllFaultCodeItems();
+                break;
+            case "0101":
+                returned = getAllFaultCodeItems().size();
+                break;
+            case "03":
+                returned = getAllFaultCodeItems();
+                break;
+            case "012F":
+                returned = getGeneralInformationByName("fuel level");
+                break;
+            case "010D":
+                returned = getGeneralInformationByName("Speed");
+                break;
+            default:
+                returned = null;
+        }
+
+        Log.e("returning", type + " : " + ((returned == null) ? "is null" : "is not null"));
+        return returned;
     }
 
     public ArrayList<BluetoothDevice> getAllPairedDevices() {
