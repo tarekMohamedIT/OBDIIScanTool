@@ -1,11 +1,14 @@
 package com.r3tr0.obdiiscantool;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 
@@ -16,18 +19,23 @@ public class IntroductionActivity extends AppCompatActivity {
 
     IntroductionPagerAdapter adapter;
     int selectedTab = 0;
+    ImageView nextImageView;
+    ImageView previousImageView;
+    TabLayout tabLayout;
+    ViewPager pager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_introduction);
         initPager();
+        initButtons();
 
     }
 
     void initPager() {
-        ViewPager pager = findViewById(R.id.introductionPager);
-        final TabLayout tabLayout = findViewById(R.id.introductionTabs);
+        pager = findViewById(R.id.introductionPager);
+        tabLayout = findViewById(R.id.introductionTabs);
 
         final ArrayList<Fragment> fragments = new ArrayList<>();
         fragments.add(new IntroductionFragment(
@@ -59,6 +67,12 @@ public class IntroductionActivity extends AppCompatActivity {
                 tabLayout.getTabAt(selectedTab).setIcon(R.drawable.unselected);
                 tabLayout.getTabAt(position).setIcon(R.drawable.selected);
                 selectedTab = position;
+
+                if (selectedTab == adapter.getCount() - 1) {
+                    nextImageView.setImageResource(R.drawable.done);
+                } else {
+                    nextImageView.setImageResource(R.drawable.next);
+                }
             }
 
             @Override
@@ -74,7 +88,33 @@ public class IntroductionActivity extends AppCompatActivity {
                 tabLayout.getTabAt(i).setIcon(R.drawable.selected);
             else
                 tabLayout.getTabAt(i).setIcon(R.drawable.unselected);
-
         }
+    }
+
+    void initButtons() {
+        nextImageView = findViewById(R.id.nextImageView);
+        previousImageView = findViewById(R.id.previousImageView);
+
+        nextImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedTab == adapter.getCount() - 1) {
+                    startActivity(new Intent(IntroductionActivity.this, LoginActivity.class));
+                    finish();
+                } else {
+                    pager.setCurrentItem(selectedTab + 1);
+                }
+            }
+        });
+
+        previousImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (selectedTab > 0) {
+                    pager.setCurrentItem(selectedTab - 1);
+                }
+            }
+        });
+
     }
 }
