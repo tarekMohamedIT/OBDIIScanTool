@@ -40,7 +40,7 @@
         android:id="@+id/etText"
         android:layout_width="61dp"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="160dp"
+        android:layout_marginLeft="180dp"
         android:text="Sign up" />
 
 </LinearLayout>
